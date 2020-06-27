@@ -52,22 +52,36 @@ else()
     endif()
 endif()
 
+# Assure Dear ImGui package was manually entered
+if(EXISTS "${IMGUI_SRC_DIR}" AND EXISTS "${IMGUI_EXAMPLES_DIR}")
+    set(IMGUI_FOUND ON)
+else()
+    set(IMGUI_FOUND ON)
+    set(IMGUI_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/")
+    set(IMGUI_EXAMPLES_DIR "${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/examples")
+endif()
+
+include_directories("${CMAKE_CURRENT_LIST_DIR}/vendor/spdlog/include")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/include/")
+
+include("${CMAKE_CURRENT_LIST_DIR}/include/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(
-        OpenGL-PBR PUBLIC
-
+        OpenGL-PBR PRIVATE
         "${OPENGL_INCLUDE_DIRS}"
         "${GLEW_INCLUDE_DIRS}"
         "${GLFW_INCLUDE_DIRS}"
         "${GLM_INCLUDE_DIRS}"
+        "${IMGUI_SRC_DIR}"
+        "${IMGUI_EXAMPLES_DIR}"
 )
 
 target_link_libraries(
-        OpenGL-PBR PUBLIC
+        OpenGL-PBR PRIVATE
         "${GLEW_LIBRARIES}"
         "${GLFW_LIBRARIES}"
         "${OPENGL_LIBRARIES}"
