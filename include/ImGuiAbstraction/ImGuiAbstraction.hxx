@@ -13,25 +13,47 @@ namespace gui
 class ImGuiAbstraction
 {
 public:
-    ImGuiAbstraction(GLFWwindow* window)
+    ImGuiAbstraction(GLFWwindow* window, std::uint8_t numberOfMeshes)
         : mWindowRef{ window }
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
-        , mScalingFactorAxis{ 0.4f, 0.4f, 1.0f }
+        , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-        , mTranslateFactorAxises{0.0f, 0.0f, -2.5f}
+        , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
     {
+        for (auto& factor: mScalingFactors)
+        {
+            factor[0] = 0.4f;
+            factor[1] = 0.4f;
+            factor[2] = 1.0f;
+        }
+
+        for (auto& factor : mTranslateFactors)
+        {
+            factor[2] = -2.5f;
+        }
     }
 
-    ImGuiAbstraction(GLFWwindow* window, const char* glslVersion)
+    ImGuiAbstraction(GLFWwindow* window, const char* glslVersion, std::uint8_t numberOfMeshes)
         : mWindowRef{ window }
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
-        , mScalingFactorAxis{ 0.4f, 0.4f, 1.0f }
+        , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-
-        , mTranslateFactorAxises{0.0f, 0.0f, -2.5f}
+        , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
     {
+        for (auto& factor: mScalingFactors)
+        {
+            factor[0] = 0.4f;
+            factor[1] = 0.4f;
+            factor[2] = 1.0f;
+        }
+
+        for (auto& factor : mTranslateFactors)
+        {
+            factor[2] = -2.5f;
+        }
+
         initializeImGui(glslVersion);
     }
 
@@ -40,9 +62,12 @@ public:
         return mRotationAngle;
     }
 
-    glm::vec3 getTranslagteFactorVec3() const
+    glm::vec3 getTranslateFactorVec3(std::uint8_t objectNumber) const
     {
-        return glm::vec3(mTranslateFactorAxises[0], mTranslateFactorAxises[1], mTranslateFactorAxises[2]);
+        return glm::vec3(
+                mTranslateFactors[objectNumber][0],
+                mTranslateFactors[objectNumber][1],
+                mTranslateFactors[objectNumber][2]);
     }
 
     glm::vec3 getRotationRotationFactorVec3() const
@@ -50,9 +75,12 @@ public:
         return glm::vec3(mRotateAroundAxises[0], mRotateAroundAxises[1], mRotateAroundAxises[2]);
     }
 
-    glm::vec3 getScalingFactorByAxisVec3() const
+    glm::vec3 getScalingFactorByAxisVec3(std::uint8_t objectNumber) const
     {
-        return glm::vec3(mScalingFactorAxis[0], mScalingFactorAxis[1], mScalingFactorAxis[2]);
+        return glm::vec3(
+                mScalingFactors[objectNumber][0],
+                mScalingFactors[objectNumber][1],
+                mScalingFactors[objectNumber][2]);
     }
 
     const std::array<float, 4>& getScreenColor() const
@@ -81,14 +109,10 @@ public:
         ImGui::Checkbox("Rotate around Y axis", &mRotateAroundAxises[1]);
         ImGui::Checkbox("Rotate around Z axis", &mRotateAroundAxises[2]);
 
-
-        ImGui::SliderFloat("Translate X axis", &mTranslateFactorAxises[0], -10.0f, 10.0f);
-        ImGui::SliderFloat("Translate Y axis", &mTranslateFactorAxises[1], -10.0f, 10.0f);
-        ImGui::SliderFloat("Translate Z axis", &mTranslateFactorAxises[2], -10.0f, 10.0f);
-
-        ImGui::SliderFloat("Scaling X", &mScalingFactorAxis[0], 0.0f, 1.0f);
-        ImGui::SliderFloat("Scaling Y", &mScalingFactorAxis[1], 0.0f, 1.0f);
-        ImGui::SliderFloat("Scaling Z", &mScalingFactorAxis[2], 0.0f, 1.0f);
+        ImGui::SliderFloat3("Translate object one", &mTranslateFactors[0][0], -10.0f, 10.0f);
+        ImGui::SliderFloat3("Translate object two", &mTranslateFactors[1][0], -10.0f, 10.0f);
+        ImGui::SliderFloat3("Scaling XYZ object one", &mScalingFactors[0][0], 0.0f, 1.0f);
+        ImGui::SliderFloat3("Scaling XYZ object two", &mScalingFactors[1][0], 0.0f, 1.0f);
     }
 
 protected:
@@ -118,10 +142,10 @@ protected:
     };
 
 private:
-    std::array<float, 4> mColorOfScreen;
-    std::array<float, 3> mScalingFactorAxis;
-    std::array<float, 3> mTranslateFactorAxises;
-    std::array<bool, 3>  mRotateAroundAxises;
+    std::vector<std::array<float, 3>> mTranslateFactors;
+    std::vector<std::array<float, 3>> mScalingFactors;
+    std::array<float, 4>                              mColorOfScreen;
+    std::array<bool, 3>                               mRotateAroundAxises;
 
     float       mRotationAngle;
     GLFWwindow* mWindowRef;
