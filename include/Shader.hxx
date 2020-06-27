@@ -20,6 +20,8 @@ public:
     ~Shader();
 
     void createShaderFromString(const char* vertexShader, const char* fragmentShader);
+    void createShaderFromFile(const char* vertexShader, const char* fragmentShader);
+
 
     std::uint32_t getProjectionMatrixLocation() const;
     std::uint32_t getModelMatrixLocation() const;
@@ -32,6 +34,7 @@ public:
 protected:
     void compileShader(const char* vertexShader, const char* fragmentShader);
     void addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType);
+    std::string readFile(const char* fileLocation);
 
 private:
     std::uint32_t mShaderID;

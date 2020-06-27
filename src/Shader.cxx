@@ -19,6 +19,14 @@ void Shader::createShaderFromString(const char* vertexShader, const char* fragme
     compileShader(vertexShader, fragmentShader);
 }
 
+void Shader::createShaderFromFile(const char* vertexShader, const char* fragmentShader)
+{
+    std::string vertexString   = readFile(vertexShader);
+    std::string fragmentString = readFile(fragmentShader);
+
+    compileShader(vertexString.c_str(), fragmentString.c_str());
+}
+
 std::uint32_t Shader::getProjectionMatrixLocation() const
 {
     return mUniformProjection;
@@ -53,7 +61,7 @@ void Shader::clearShader()
         glDeleteProgram(mShaderID);
         mShaderID = 0;
     }
-    mUniformModel = 0;
+    mUniformModel      = 0;
     mUniformProjection = 0;
 }
 
@@ -68,8 +76,8 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     addShader(mShaderID, vertexShader, ShaderType::VERTEX);
     addShader(mShaderID, fragmentShader, ShaderType::FRAGMENT);
 
-    GLint result{0};
-    GLchar eLog[1024]{0};
+    GLint  result{ 0 };
+    GLchar eLog[1024]{ 0 };
 
     glLinkProgram(mShaderID);
     glGetProgramiv(mShaderID, GL_LINK_STATUS, &result);
@@ -89,7 +97,7 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
         return;
     }
 
-    mUniformModel = glGetUniformLocation(mShaderID, "uModel");
+    mUniformModel      = glGetUniformLocation(mShaderID, "uModel");
     mUniformProjection = glGetUniformLocation(mShaderID, "uProjection");
 }
 
@@ -104,15 +112,39 @@ void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderT
     glShaderSource(theShader, 1, theCode, codeLength);
     glCompileShader(theShader);
 
-    GLint result{0};
-    GLchar eLog[1024]{0};
+    GLint  result{ 0 };
+    GLchar eLog[1024]{ 0 };
 
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result)
     {
         glGetShaderInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        OGL_CORE_ERROR("Error compiling %s shader: %s\n", shaderType == ShaderType::VERTEX ? "vertex" : "fragment", eLog);
+        OGL_CORE_ERROR(
+                "Error compiling %s shader: %s\n",
+                shaderType == ShaderType::VERTEX ? "vertex" : "fragment",
+                eLog);
         return;
     }
     glAttachShader(theProgram, theShader);
+}
+
+std::string Shader::readFile(const char* fileLocation)
+{
+    std::string   content{};
+    std::ifstream file{ fileLocation, std::ios::in };
+    if (file.is_open())
+    {
+        std::string line{ "" };
+        while (!file.eof())
+        {
+            std::getline(file, line);
+            line.append("\n");
+            content.append(line);
+        }
+    }
+    else
+    {
+        OGL_CORE_ERROR("Failed to open file %s", fileLocation);
+    }
+    return content;
 }
