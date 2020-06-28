@@ -21,8 +21,8 @@ public:
     ~Window();
 
     operator GLFWwindow*();
-    inline std::uint32_t getBufferWidth() const;
-    inline std::uint32_t getBufferHeight() const;
+    std::uint32_t getBufferWidth() const;
+    std::uint32_t getBufferHeight() const;
 
 protected:
     void initialize();
