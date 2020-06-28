@@ -1,7 +1,12 @@
 #ifndef OPENGL_PBR_IMGUIABSTRACTION_HXX
 #define OPENGL_PBR_IMGUIABSTRACTION_HXX
+#include <GL/glew.h>
+
+#include <GLFW/glfw3.h>
+
 #include <examples/imgui_impl_glfw.h>
 #include <examples/imgui_impl_opengl3.h>
+
 #include <imgui.h>
 
 #include <array>

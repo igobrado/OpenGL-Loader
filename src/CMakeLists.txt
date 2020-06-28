@@ -1,6 +1,14 @@
 list(APPEND OPENGL_PBR_SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/Mesh.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Shader.cxx
+        ${CMAKE_CURRENT_LIST_DIR}/Window.cxx
+        ${CMAKE_CURRENT_LIST_DIR}/application/OpenGLPBR.cxx
         )
 
+list(APPEND OPENGL_PBR_HEADERS
+        ${CMAKE_CURRENT_LIST_DIR}/application/IApplication.hxx
+        ${CMAKE_CURRENT_LIST_DIR}/application/OpenGLPBR.hxx
+
+
+        )
 include ("${CMAKE_CURRENT_LIST_DIR}/entry/CMakeLists.txt")

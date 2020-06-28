@@ -4,7 +4,7 @@ list(APPEND OPENGL_PBR_SOURCES
 
 add_executable(
         OpenGL-PBR
-        "${OPENGL_PBR_SOURCES}"
+        "${OPENGL_PBR_HEADERS}"
         "${OPENGL_PBR_SOURCES}"
         "${IMGUI_SRC_DIR}/imgui.cpp"
         "${IMGUI_SRC_DIR}/imgui_draw.cpp"

@@ -63,7 +63,7 @@ endif()
 
 include_directories("${CMAKE_CURRENT_LIST_DIR}/vendor/spdlog/include")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/include/")
-
+include_directories("${CMAKE_CURRENT_LIST_DIR}/src/application")
 include("${CMAKE_CURRENT_LIST_DIR}/include/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 
