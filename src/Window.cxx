@@ -41,7 +41,7 @@ void Window::initialize()
 {
     if (!glfwInit())
     {
-        printf("Error Initialising GLFW");
+        OGL_CORE_ERROR("Error initialising GLFW!");
         glfwTerminate();
     }
 
