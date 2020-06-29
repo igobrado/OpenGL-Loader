@@ -21,9 +21,10 @@ public:
 protected:
     void update(glm::mat4& projectionMatrix) override;
 
-    void createShaders();
-    void createObjects();
+    void            createShaders();
+    void            createObjects();
     constexpr float toRadians(float angle);
+
 private:
     std::unique_ptr<Window> mWindow;
     gui::ImGuiAbstraction   mImGui;
@@ -33,6 +34,9 @@ private:
 
     const char* mVertexShader;
     const char* mFragmentShader;
+
+    float       mDeltaTime;
+    float       mLastTime;
 };
 
 #endif  // OPENGL_PBR_OPENGLPBR_HXX

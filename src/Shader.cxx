@@ -38,6 +38,11 @@ std::uint32_t Shader::getModelMatrixLocation() const
     return mUniformModel;
 }
 
+std::uint32_t Shader::getViewLocation() const
+{
+    return mUniformView;
+}
+
 std::uint32_t Shader::getUniformLocation(const char* uniformName)
 {
     return 0;
@@ -100,6 +105,7 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
 
     mUniformModel      = glGetUniformLocation(mShaderID, "uModel");
     mUniformProjection = glGetUniformLocation(mShaderID, "uProjection");
+    mUniformView       = glGetUniformLocation(mShaderID, "uView");
 }
 
 void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType)

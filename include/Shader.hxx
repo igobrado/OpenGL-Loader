@@ -22,9 +22,9 @@ public:
     void createShaderFromString(const char* vertexShader, const char* fragmentShader);
     void createShaderFromFile(const char* vertexShader, const char* fragmentShader);
 
-
     std::uint32_t getProjectionMatrixLocation() const;
     std::uint32_t getModelMatrixLocation() const;
+    std::uint32_t getViewLocation() const;
 
     std::uint32_t getUniformLocation(const char* uniformName);
 
@@ -40,6 +40,7 @@ private:
     std::uint32_t mShaderID;
     std::uint32_t mUniformProjection;
     std::uint32_t mUniformModel;
+    std::uint32_t mUniformView;
 };
 
 #endif  // OPENGL_PBR_SHADER_HXX

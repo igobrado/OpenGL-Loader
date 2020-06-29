@@ -1,4 +1,5 @@
 list(APPEND OPENGL_PBR_SOURCES
+        ${CMAKE_CURRENT_LIST_DIR}/Camera.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Keyboard.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Mesh.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Mouse.cxx

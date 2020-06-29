@@ -39,3 +39,13 @@ Keyboard::operator GLFWkeyfun()
 {
     return handleKeyboardKeys;
 }
+
+std::array<bool, 1024> &Keyboard::getKeys()
+{
+    return mKeys;
+}
+
+bool Keyboard::isKeyPressed(int code) const
+{
+    return mKeys[code];
+}

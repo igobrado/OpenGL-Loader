@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "Camera.hxx"
 #include "Keyboard.hxx"
 #include "Mouse.hxx"
 
@@ -29,11 +30,13 @@ public:
 
     operator GLFWwindow*();
 
+    void handleCameraEvents(float deltaTime);
     std::uint32_t getBufferWidth() const;
-
     std::uint32_t getBufferHeight() const;
+
     Keyboard&     getKeyboard();
     Mouse&        getMouse();
+    Camera&       getCamera();
 
 protected:
     void toggleMouseVisible();
@@ -41,6 +44,7 @@ protected:
     void createCallbacks();
 
 private:
+    Camera        mCamera;
     GLFWwindow*   mMainWindow;
     WindowContext mWindowContext;
     Keyboard      mKeyboard;

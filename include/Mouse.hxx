@@ -12,6 +12,7 @@ struct Point
 
 class Mouse
 {
+    friend class Camera;
 public:
     Mouse();
     operator GLFWcursorposfun();

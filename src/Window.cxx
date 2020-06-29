@@ -5,17 +5,20 @@
 #include "common/Logging.hxx"
 
 Window::Window()  //
-    : mMainWindow{ nullptr }
+    : mCamera{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.f, 0.2f }
+    , mMainWindow{ nullptr }
     , mWindowContext{ 800U, 600U, 0U, 0U }
     , mKeyboard{}
     , mMouse{}
     , mCursorEnabled{ false }
+
 {
     initialize();
 }
 
 Window::Window(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
-    : mMainWindow{ nullptr }
+    : mCamera{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.f, 0.2f }
+    , mMainWindow{ nullptr }
     , mWindowContext{ windowWidth, windowHeight, 0U, 0U }
     , mKeyboard{}
     , mMouse{}
@@ -60,6 +63,11 @@ Keyboard& Window::getKeyboard()
 Mouse& Window::getMouse()
 {
     return mMouse;
+}
+
+Camera& Window::getCamera()
+{
+    return mCamera;
 }
 
 void Window::initialize()
@@ -118,4 +126,10 @@ void Window::createCallbacks()
 {
     glfwSetKeyCallback(mMainWindow, mKeyboard);
     glfwSetCursorPosCallback(mMainWindow, mMouse);
+}
+
+void Window::handleCameraEvents(float deltaTime)
+{
+    mCamera.keyControl(mKeyboard, deltaTime);
+    mCamera.mouseControl(mMouse);
 }

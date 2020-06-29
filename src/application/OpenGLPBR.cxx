@@ -4,13 +4,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define VERTEX_SHADER   "../res/vertex.glsl"
+#define FRAGMENT_SHADER "../res/fragment.glsl"
+
 OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     : mWindow{ std::make_unique<Window>(windowWidth, windowHeight) }
     , mImGui{ *mWindow, "#version 330", 2 }
     , mMeshList{}
     , mShaderList{}
-    , mVertexShader{ "../res/vertex.glsl" }
-    , mFragmentShader{ "../res/fragment.glsl" }
+    , mVertexShader{ VERTEX_SHADER }
+    , mFragmentShader{ FRAGMENT_SHADER }
+    , mDeltaTime{0.0f}
+    , mLastTime{0.0f}
 {
     createObjects();
     createShaders();
@@ -23,8 +28,14 @@ int OpenGLPBR::run()
             (GLfloat) mWindow->getBufferWidth() / (GLfloat) mWindow->getBufferHeight(),
             0.1f,
             100.0f);
-    while(!glfwWindowShouldClose(*mWindow))
+    while (!glfwWindowShouldClose(*mWindow))
     {
+        float now = glfwGetTime();
+        mDeltaTime = now - mLastTime;
+        mLastTime = now;
+
+        glfwPollEvents();
+        mWindow->handleCameraEvents(mDeltaTime);
         update(projectionMatrix);
         glfwSwapBuffers(*mWindow);
     }
@@ -33,7 +44,6 @@ int OpenGLPBR::run()
 
 void OpenGLPBR::update(glm::mat4& projectionMatrix)
 {
-    glfwPollEvents();
     auto screenColor = mImGui.getScreenColor();
 
     glClearColor(screenColor[0], screenColor[1], screenColor[2], screenColor[3]);
@@ -42,6 +52,7 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
     mShaderList[0]->useShader();
     glm::mat4 model{ 1.0f };
     int       i = 0;
+    glUniformMatrix4fv(mShaderList[0]->getViewLocation(), 1, GL_FALSE, glm::value_ptr(mWindow->getCamera().claculateViewMatrix()));
     for (auto& mesh : mMeshList)
     {
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));
@@ -49,7 +60,11 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
         model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
         glUniformMatrix4fv(mShaderList[0]->getModelMatrixLocation(), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(mShaderList[0]->getProjectionMatrixLocation(), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        glUniformMatrix4fv(
+                mShaderList[0]->getProjectionMatrixLocation(),
+                1,
+                GL_FALSE,
+                glm::value_ptr(projectionMatrix));
 
         mesh->renderMesh();
         model = glm::mat4{ 1.0f };
@@ -79,9 +94,9 @@ void OpenGLPBR::createObjects()
 
     std::vector<float> vertices = {
             -1.0f, -1.0f, 0.0f,
-            0.0f, -1.0f, 1.0f,
-            1.0f, -1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f
+             0.0f, -1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f,
+             0.0f,  1.0f, 0.0f
     };
     // clang-format on
 

@@ -8,9 +8,13 @@
 
 class Keyboard
 {
+    friend class Camera;
 public:
     Keyboard();
     operator GLFWkeyfun();
+
+    bool isKeyPressed(int code) const;
+    std::array<bool, 1024>& getKeys();
 
 protected:
     static void handleKeyboardKeys(GLFWwindow* window, int key, int code, int action, int mode);
