@@ -1,5 +1,7 @@
 list(APPEND OPENGL_PBR_SOURCES
+        ${CMAKE_CURRENT_LIST_DIR}/Keyboard.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Mesh.cxx
+        ${CMAKE_CURRENT_LIST_DIR}/Mouse.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Shader.cxx
         ${CMAKE_CURRENT_LIST_DIR}/Window.cxx
         ${CMAKE_CURRENT_LIST_DIR}/application/OpenGLPBR.cxx

@@ -1,12 +1,9 @@
 #ifndef OPENGL_PBR_IMGUIABSTRACTION_HXX
 #define OPENGL_PBR_IMGUIABSTRACTION_HXX
 #include <GL/glew.h>
-
 #include <GLFW/glfw3.h>
-
 #include <examples/imgui_impl_glfw.h>
 #include <examples/imgui_impl_opengl3.h>
-
 #include <imgui.h>
 
 #include <array>
@@ -26,7 +23,7 @@ public:
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
     {
-        for (auto& factor: mScalingFactors)
+        for (auto& factor : mScalingFactors)
         {
             factor[0] = 0.4f;
             factor[1] = 0.4f;
@@ -47,7 +44,7 @@ public:
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
     {
-        for (auto& factor: mScalingFactors)
+        for (auto& factor : mScalingFactors)
         {
             factor[0] = 0.4f;
             factor[1] = 0.4f;
@@ -149,8 +146,8 @@ protected:
 private:
     std::vector<std::array<float, 3>> mTranslateFactors;
     std::vector<std::array<float, 3>> mScalingFactors;
-    std::array<float, 4>                              mColorOfScreen;
-    std::array<bool, 3>                               mRotateAroundAxises;
+    std::array<float, 4>              mColorOfScreen;
+    std::array<bool, 3>               mRotateAroundAxises;
 
     float       mRotationAngle;
     GLFWwindow* mWindowRef;

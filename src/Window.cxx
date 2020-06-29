@@ -1,10 +1,15 @@
 #include "Window.hxx"
 
+#include <sstream>
+
 #include "common/Logging.hxx"
 
 Window::Window()  //
     : mMainWindow{ nullptr }
     , mWindowContext{ 800U, 600U, 0U, 0U }
+    , mKeyboard{}
+    , mMouse{}
+    , mCursorEnabled{ false }
 {
     initialize();
 }
@@ -12,6 +17,10 @@ Window::Window()  //
 Window::Window(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     : mMainWindow{ nullptr }
     , mWindowContext{ windowWidth, windowHeight, 0U, 0U }
+    , mKeyboard{}
+    , mMouse{}
+    , mCursorEnabled{ false }
+
 {
     initialize();
 }
@@ -27,6 +36,12 @@ Window::operator GLFWwindow*()
     return mMainWindow;
 }
 
+void Window::toggleMouseVisible()
+{
+    mCursorEnabled = !mCursorEnabled;
+    glfwSetInputMode(mMainWindow, GLFW_CURSOR, !mCursorEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
 std::uint32_t Window::getBufferWidth() const
 {
     return mWindowContext.bufferHeight;
@@ -35,6 +50,16 @@ std::uint32_t Window::getBufferWidth() const
 std::uint32_t Window::getBufferHeight() const
 {
     return mWindowContext.bufferHeight;
+}
+
+Keyboard& Window::getKeyboard()
+{
+    return mKeyboard;
+}
+
+Mouse& Window::getMouse()
+{
+    return mMouse;
 }
 
 void Window::initialize()
@@ -68,6 +93,9 @@ void Window::initialize()
     // Set the current context
     glfwMakeContextCurrent(mMainWindow);
 
+    createCallbacks();
+    glfwSetInputMode(mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     // Allow modern extension access
     glewExperimental = GL_TRUE;
 
@@ -80,6 +108,14 @@ void Window::initialize()
     }
 
     glEnable(GL_DEPTH_TEST);
+
     // Create Viewport
     glViewport(0, 0, mWindowContext.bufferWidth, mWindowContext.bufferHeight);
+    glfwSetWindowUserPointer(mMainWindow, this);
+}
+
+void Window::createCallbacks()
+{
+    glfwSetKeyCallback(mMainWindow, mKeyboard);
+    glfwSetCursorPosCallback(mMainWindow, mMouse);
 }

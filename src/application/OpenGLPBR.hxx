@@ -19,13 +19,11 @@ public:
     int run() override;
 
 protected:
-    int update() override;
+    void update(glm::mat4& projectionMatrix) override;
 
     void createShaders();
-    void createObject();
-
+    void createObjects();
     constexpr float toRadians(float angle);
-
 private:
     std::unique_ptr<Window> mWindow;
     gui::ImGuiAbstraction   mImGui;

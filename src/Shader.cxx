@@ -25,6 +25,7 @@ void Shader::createShaderFromFile(const char* vertexShader, const char* fragment
     std::string fragmentString = readFile(fragmentShader);
 
     compileShader(vertexString.c_str(), fragmentString.c_str());
+    OGL_CORE_INFO("Compiling shaders went successfully!");
 }
 
 std::uint32_t Shader::getProjectionMatrixLocation() const
