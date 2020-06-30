@@ -7,15 +7,32 @@
 #define VERTEX_SHADER   "../res/vertex.glsl"
 #define FRAGMENT_SHADER "../res/fragment.glsl"
 
+OpenGLPBR::DefaultCameraContext::DefaultCameraContext()
+
+    : startPosition{ 0.0f, 0.0f, 0.0f }
+    , startUp{ 0.0f, -1.0f, 0.0f }
+    , startYaw{ -90.0f }
+    , startPitch{ 0.0f }
+    , startMovementSpeed{ 5.0f }
+    , startTurnSpeed{ 0.1f }
+{
+}
+
 OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
-    : mWindow{ std::make_unique<Window>(windowWidth, windowHeight) }
+    : mCamera{ DefaultCameraContext::context().startPosition,      DefaultCameraContext::context().startUp,
+               DefaultCameraContext::context().startYaw,           DefaultCameraContext::context().startPitch,
+               DefaultCameraContext::context().startMovementSpeed, DefaultCameraContext::context().startTurnSpeed }
+    , mMouse{}
+    , mKeyboard{}
+    , mEventDispatcher{ std::make_shared<EventDispatcher>(mKeyboard, mMouse) }
+    , mWindow{ std::make_unique<Window>(windowWidth, windowHeight, *mEventDispatcher) }
     , mImGui{ *mWindow, "#version 330", 2 }
     , mMeshList{}
     , mShaderList{}
     , mVertexShader{ VERTEX_SHADER }
     , mFragmentShader{ FRAGMENT_SHADER }
-    , mDeltaTime{0.0f}
-    , mLastTime{0.0f}
+    , mDeltaTime{ 0.0f }
+    , mLastTime{ 0.0f }
 {
     createObjects();
     createShaders();
@@ -30,12 +47,13 @@ int OpenGLPBR::run()
             100.0f);
     while (!glfwWindowShouldClose(*mWindow))
     {
-        float now = glfwGetTime();
+        float now  = glfwGetTime();
         mDeltaTime = now - mLastTime;
-        mLastTime = now;
+        mLastTime  = now;
 
         glfwPollEvents();
-        mWindow->handleCameraEvents(mDeltaTime);
+        mCamera.keyControl(mKeyboard, mDeltaTime);
+        mCamera.mouseControl(mMouse);
         update(projectionMatrix);
         glfwSwapBuffers(*mWindow);
     }
@@ -52,7 +70,7 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
     mShaderList[0]->useShader();
     glm::mat4 model{ 1.0f };
     int       i = 0;
-    glUniformMatrix4fv(mShaderList[0]->getViewLocation(), 1, GL_FALSE, glm::value_ptr(mWindow->getCamera().claculateViewMatrix()));
+    glUniformMatrix4fv(mShaderList[0]->getViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.claculateViewMatrix()));
     for (auto& mesh : mMeshList)
     {
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));

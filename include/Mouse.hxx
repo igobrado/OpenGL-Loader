@@ -10,22 +10,33 @@ struct Point
     float Y;
 };
 
+struct MouseContext
+{
+    Point lastPoint;
+    Point changePoint;
+};
 class Mouse
 {
-    friend class Camera;
 public:
     Mouse();
-    operator GLFWcursorposfun();
 
+    bool captureEvents();
+    void toggleCaptureEvents();
+
+    bool mouseFirstMoved();
+
+    void  toggleMouseFirstMoved();
     float getXChange();
     float getYChange();
 
-protected:
-    static void handleMouseMovement(GLFWwindow* window, double xPos, double yPos);
+    MouseContext& getMouseContext();
 
 private:
-    Point mLastPoint;
-    Point mChangePoint;
-    bool  mFirstMove;
+    MouseContext mMouseContext;
+    Point        mLastPoint;
+    Point        mChangePoint;
+
+    bool mShouldCaptureEvents;
+    bool mFirstMove;
 };
 #endif  // OPENGL_PBR_MOUSE_HXX

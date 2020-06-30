@@ -4,11 +4,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <array>
+#include <functional>
 
 #include "Camera.hxx"
-#include "Keyboard.hxx"
-#include "Mouse.hxx"
+#include "Event.hxx"
 
 struct WindowContext
 {
@@ -22,34 +21,28 @@ struct WindowContext
 class Window
 {
     friend Keyboard;
+    friend Mouse;
 
 public:
-    Window();
-    Window(std::uint32_t windowWidth, std::uint32_t windowHeight);
+    Window(std::uint32_t windowWidth, std::uint32_t windowHeight, EventDispatcher& dispatcher);
     ~Window();
 
     operator GLFWwindow*();
 
-    void handleCameraEvents(float deltaTime);
     std::uint32_t getBufferWidth() const;
     std::uint32_t getBufferHeight() const;
 
-    Keyboard&     getKeyboard();
-    Mouse&        getMouse();
-    Camera&       getCamera();
+    void toggleMouseVisible();
 
 protected:
-    void toggleMouseVisible();
     void initialize();
-    void createCallbacks();
+    bool shouldCaptureMouseEvents();
 
 private:
-    Camera        mCamera;
     GLFWwindow*   mMainWindow;
     WindowContext mWindowContext;
-    Keyboard      mKeyboard;
-    Mouse         mMouse;
+    bool          mCursorEnabled;
 
-    bool mCursorEnabled;
+    EventDispatcher& mDispatcher;
 };
 #endif  // OPENGL_PBR_WINDOW_HXX

@@ -7,13 +7,13 @@ Camera::Camera(
         float     startPitch,
         float     startMovementSpeed,
         float     startTurnSpeed)  //
-    : mPosition{ startPosition }
-    , mFront{ 0.0f, 0.0f, -1.0f }
-    , mUP{}
-    , mRight{ 0.0f }
-    , mWorldUp{ startUp }
-    , mYaw{ startYaw }
-    , mPitch{ startPitch }
+    : mCameraContext{ startPosition,
+                      glm::vec3(0.0f, -1.0f, 0.0f),
+                      glm::vec3{ 0.0f, 0.0f, 0.0f },
+                      glm::vec3{ 0.0f, 0.0f, 0.0f },
+                      startUp,
+                      startYaw,
+                      startPitch }
     , mMovementSpeed{ startMovementSpeed }
     , mTurnSpeed{ startTurnSpeed }
 {
@@ -22,13 +22,13 @@ Camera::Camera(
 
 void Camera::update()
 {
-    mFront.x = std::cos(glm::radians(mYaw)) * std::cos(glm::radians(mPitch));
-    mFront.y = std::sin(glm::radians(mPitch));
-    mFront.z = std::sin(glm::radians(mYaw)) * std::cos(glm::radians(mPitch));
-    mFront   = glm::normalize(mFront);
+    mCameraContext.front.x = std::cos(glm::radians(mCameraContext.yaw)) * std::cos(glm::radians(mCameraContext.pitch));
+    mCameraContext.front.y = std::sin(glm::radians(mCameraContext.pitch));
+    mCameraContext.front.z = std::sin(glm::radians(mCameraContext.yaw)) * std::cos(glm::radians(mCameraContext.pitch));
+    mCameraContext.front   = glm::normalize(mCameraContext.front);
 
-    mRight = glm::normalize(glm::cross(mFront, mWorldUp));
-    mUP    = glm::normalize(glm::cross(mRight, mFront));
+    mCameraContext.right = glm::normalize(glm::cross(mCameraContext.front, mCameraContext.worldUp));
+    mCameraContext.up    = glm::normalize(glm::cross(mCameraContext.right, mCameraContext.front));
 }
 
 void Camera::keyControl(const Keyboard& keyboard, float deltaTime)
@@ -36,48 +36,43 @@ void Camera::keyControl(const Keyboard& keyboard, float deltaTime)
     auto velocity = deltaTime * mMovementSpeed;
     if (keyboard.isKeyPressed(GLFW_KEY_W))
     {
-        mPosition += mFront * velocity;
+        mCameraContext.position += mCameraContext.front * velocity;
     }
     else if (keyboard.isKeyPressed(GLFW_KEY_S))
     {
-        mPosition -= mFront * velocity;
+        mCameraContext.position -= mCameraContext.front * velocity;
     }
     else if (keyboard.isKeyPressed(GLFW_KEY_A))
     {
-        mPosition -= mRight * velocity;
+        mCameraContext.position -= mCameraContext.right * velocity;
     }
     else if (keyboard.isKeyPressed(GLFW_KEY_D))
     {
-        mPosition += mRight * velocity;
+        mCameraContext.position += mCameraContext.right * velocity;
     }
 }
 
-void Camera::mouseControl(const Mouse& mouse)
+void Camera::mouseControl(Mouse& mouse)
 {
-    float xChange = mouse.mChangePoint.X;
-    float yChange = mouse.mChangePoint.Y;
-
-    xChange *= mTurnSpeed;
-    yChange *= mTurnSpeed;
-
-    mYaw += xChange;
-    mPitch += yChange;
-
-    if (mPitch > 89.0f)
+    if (mouse.captureEvents())
     {
-        mPitch = 89.0f;
-    }
+        float xChange = mouse.getXChange();
+        float yChange = mouse.getYChange();
 
-    if (mPitch < -89.0f )
-    {
-        mPitch = -89.0f;
-    }
+        xChange *= mTurnSpeed;
+        yChange *= mTurnSpeed;
 
-    update();
+        mCameraContext.yaw += xChange;
+        mCameraContext.pitch += yChange;
+
+        mCameraContext.pitch = mCameraContext.pitch > 89.9f ? 89.0f : mCameraContext.pitch;
+        mCameraContext.pitch = mCameraContext.pitch < -89.9f ? -89.0f : mCameraContext.pitch;
+
+        update();
+    }
 }
 
 glm::mat4 Camera::claculateViewMatrix()
 {
-    return glm::lookAt(mPosition, mPosition + mFront, mUP);
+    return glm::lookAt(mCameraContext.position, mCameraContext.position + mCameraContext.front, mCameraContext.up);
 }
-

@@ -1,6 +1,7 @@
 list(APPEND OPENGL_PBR_HEADERS
         "${CMAKE_CURRENT_LIST_DIR}/common/Logging.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Camera.hxx"
+        "${CMAKE_CURRENT_LIST_DIR}/Event.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Keyboard.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Mesh.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Mouse.hxx"

@@ -4,26 +4,14 @@
 
 #include "common/Logging.hxx"
 
-Window::Window()  //
-    : mCamera{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.f, 0.2f }
-    , mMainWindow{ nullptr }
-    , mWindowContext{ 800U, 600U, 0U, 0U }
-    , mKeyboard{}
-    , mMouse{}
-    , mCursorEnabled{ false }
-
-{
-    initialize();
-}
-
-Window::Window(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
-    : mCamera{ glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.f, 0.2f }
-    , mMainWindow{ nullptr }
+Window::Window(
+        std::uint32_t    windowWidth,
+        std::uint32_t    windowHeight,
+        EventDispatcher& dispatcher)  //
+    : mMainWindow{ nullptr }
     , mWindowContext{ windowWidth, windowHeight, 0U, 0U }
-    , mKeyboard{}
-    , mMouse{}
-    , mCursorEnabled{ false }
-
+    , mCursorEnabled{ true }
+    , mDispatcher{ dispatcher }
 {
     initialize();
 }
@@ -53,21 +41,6 @@ std::uint32_t Window::getBufferWidth() const
 std::uint32_t Window::getBufferHeight() const
 {
     return mWindowContext.bufferHeight;
-}
-
-Keyboard& Window::getKeyboard()
-{
-    return mKeyboard;
-}
-
-Mouse& Window::getMouse()
-{
-    return mMouse;
-}
-
-Camera& Window::getCamera()
-{
-    return mCamera;
 }
 
 void Window::initialize()
@@ -101,7 +74,6 @@ void Window::initialize()
     // Set the current context
     glfwMakeContextCurrent(mMainWindow);
 
-    createCallbacks();
     glfwSetInputMode(mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Allow modern extension access
@@ -120,16 +92,29 @@ void Window::initialize()
     // Create Viewport
     glViewport(0, 0, mWindowContext.bufferWidth, mWindowContext.bufferHeight);
     glfwSetWindowUserPointer(mMainWindow, this);
+    glfwSetKeyCallback(
+            *this,
+            [](GLFWwindow* window, int key, int code, int action, int mode)  //
+            {                                                                //
+                Window*       theWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+                KeyboardEvent keyboardEvent{ action, key, theWindow->mDispatcher.getKeyboard(), *theWindow };
+                theWindow->mDispatcher.dispatch(keyboardEvent);
+            });
+
+    glfwSetCursorPosCallback(
+            *this,
+            [](GLFWwindow* window, double xPos, double yPos)  //
+            {                                                 //
+                Window* theWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+                if (theWindow->shouldCaptureMouseEvents())
+                {
+                    MouseMoveEvent mouseMoveEvent{ theWindow->mDispatcher.getMouse(), xPos, yPos };
+                    theWindow->mDispatcher.dispatch(mouseMoveEvent);
+                }
+            });
 }
 
-void Window::createCallbacks()
+bool Window::shouldCaptureMouseEvents()
 {
-    glfwSetKeyCallback(mMainWindow, mKeyboard);
-    glfwSetCursorPosCallback(mMainWindow, mMouse);
-}
-
-void Window::handleCameraEvents(float deltaTime)
-{
-    mCamera.keyControl(mKeyboard, deltaTime);
-    mCamera.mouseControl(mMouse);
+    return mCursorEnabled;
 }

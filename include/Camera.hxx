@@ -3,10 +3,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <array>
 #include "Keyboard.hxx"
 #include "Mouse.hxx"
 
@@ -21,21 +21,25 @@ public:
            float     startTurnSpeed);
 
     void keyControl(const Keyboard& keyboard, float deltaTime);
-    void mouseControl(const Mouse& mouse);
+    void mouseControl(Mouse& mouse);
 
     glm::mat4 claculateViewMatrix();
+
 protected:
     void update();
 
 private:
-    glm::vec3 mPosition;
-    glm::vec3 mFront;
-    glm::vec3 mUP;
-    glm::vec3 mRight;
-    glm::vec3 mWorldUp;
+    struct CameraContext
+    {
+        glm::vec3 position;
+        glm::vec3 front;
+        glm::vec3 up;
+        glm::vec3 right;
+        glm::vec3 worldUp;
 
-    float mYaw;
-    float mPitch;
+        float yaw;
+        float pitch;
+    } mCameraContext;
 
     float mMovementSpeed;
     float mTurnSpeed;
