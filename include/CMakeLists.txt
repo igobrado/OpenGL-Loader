@@ -3,6 +3,7 @@ list(APPEND OPENGL_PBR_HEADERS
         "${CMAKE_CURRENT_LIST_DIR}/EventSystem/EventDispatcher.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/EventSystem/MoveEvents.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/EventSystem/Event.hxx"
+        "${CMAKE_CURRENT_LIST_DIR}/property/Light.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/common/Logging.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Camera.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Keyboard.hxx"

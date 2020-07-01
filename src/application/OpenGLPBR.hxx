@@ -12,6 +12,7 @@
 #include "Shader.hxx"
 #include "Texture.hxx"
 #include "Window.hxx"
+#include "property/Light.hxx"
 
 class OpenGLPBR : public IApplication
 {
@@ -44,7 +45,7 @@ private:
 
     float mDeltaTime;
     float mLastTime;
-
+    Light mLight;
     struct DefaultCameraContext
     {
 

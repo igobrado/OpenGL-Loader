@@ -1,5 +1,6 @@
-#include <sstream>
 #include "Shader.hxx"
+
+#include <sstream>
 
 #include "common/Logging.hxx"
 
@@ -42,6 +43,16 @@ std::uint32_t Shader::getModelMatrixLocation() const
 std::uint32_t Shader::getViewLocation() const
 {
     return mUniformView;
+}
+
+std::uint32_t Shader::getUniformAmbientIntensityLocation() const
+{
+    return mUniformAmbientIntensity;
+}
+
+std::uint32_t Shader::getUniformAmbientColorLocation() const
+{
+    return mUniformAmbientColor;
 }
 
 std::uint32_t Shader::getUniformLocation(const char* uniformName)
@@ -91,7 +102,7 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     if (!result)
     {
         glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        std::string out {"Error linking program: " + std::string {eLog} + "\n"};
+        std::string out{ "Error linking program: " + std::string{ eLog } + "\n" };
         OGL_CORE_ERROR(out.c_str());
         return;
     }
@@ -101,14 +112,16 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     if (!result)
     {
         glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        std::string out {"Error validating program: " + std::string {eLog} + "\n"};
+        std::string out{ "Error validating program: " + std::string{ eLog } + "\n" };
         OGL_CORE_ERROR(out.c_str());
         return;
     }
 
-    mUniformModel      = glGetUniformLocation(mShaderID, "uModel");
-    mUniformProjection = glGetUniformLocation(mShaderID, "uProjection");
-    mUniformView       = glGetUniformLocation(mShaderID, "uView");
+    mUniformModel            = glGetUniformLocation(mShaderID, "uModel");
+    mUniformProjection       = glGetUniformLocation(mShaderID, "uProjection");
+    mUniformView             = glGetUniformLocation(mShaderID, "uView");
+    mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
+    mUniformAmbientColor     = glGetUniformLocation(mShaderID, "directionalLight.color");
 }
 
 void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType)

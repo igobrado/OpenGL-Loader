@@ -25,6 +25,8 @@ public:
     std::uint32_t getProjectionMatrixLocation() const;
     std::uint32_t getModelMatrixLocation() const;
     std::uint32_t getViewLocation() const;
+    std::uint32_t getUniformAmbientIntensityLocation() const;
+    std::uint32_t getUniformAmbientColorLocation() const;
 
     std::uint32_t getUniformLocation(const char* uniformName);
 
@@ -32,8 +34,8 @@ public:
     void clearShader();
 
 protected:
-    void compileShader(const char* vertexShader, const char* fragmentShader);
-    void addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType);
+    void        compileShader(const char* vertexShader, const char* fragmentShader);
+    void        addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType);
     std::string readFile(const char* fileLocation);
 
 private:
@@ -41,6 +43,8 @@ private:
     std::uint32_t mUniformProjection;
     std::uint32_t mUniformModel;
     std::uint32_t mUniformView;
+    std::uint32_t mUniformAmbientIntensity;
+    std::uint32_t mUniformAmbientColor;
 };
 
 #endif  // OPENGL_PBR_SHADER_HXX

@@ -36,6 +36,7 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
+    , mLight{ mImGui.ambientLightColor(), mImGui.ambientIntensity(), nullptr }
 
 {
     auto eventCallbackFN = [this](Event& e) {
@@ -121,6 +122,7 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
         model = glm::rotate(model, toRadians(180), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
+        mLight.useLight();
         glUniformMatrix4fv(mShaderList[0]->getModelMatrixLocation(), 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(
                 mShaderList[0]->getProjectionMatrixLocation(),
@@ -142,6 +144,7 @@ void OpenGLPBR::createShaders()
     {
         shader->createShaderFromFile(mVertexShader, mFragmentShader);
     }
+    mLight.setShader(mShaderList[0].get());
 }
 
 void OpenGLPBR::createObjects()
