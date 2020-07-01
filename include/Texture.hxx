@@ -7,21 +7,35 @@
 
 #include "stb_image.h"
 
+enum class TextureType : int
+{
+    TEXTURE_2D = GL_TEXTURE_2D,
+    TEXTURE_3D = GL_TEXTURE_3D,
+};
+
 class Texture
 {
 public:
-    Texture(const char* fileLocation);
+    Texture(const char* fileLocation, TextureType textureType = TextureType::TEXTURE_2D);
     ~Texture();
+
+    TextureType getTextureType();
 
     void loadTexture();
     void useTexture();
     void clearTexture();
 
 private:
-    std::uint32_t mTextureID;
-    std::int32_t mWidth;
-    std::int32_t mHeight;
-    std::int32_t mBitDepth;
-    std::string   mFileLocation;
+    struct TextureContext
+    {
+        std::uint32_t textureID;
+        std::int32_t  width;
+        std::int32_t  height;
+        std::int32_t  bitDepth;
+        std::string   fileLocation;
+
+        TextureType textureType;
+    } mTextureContext;
 };
+
 #endif  //! OPENGL_PBR_TEXTURE_HXX

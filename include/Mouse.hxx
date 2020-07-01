@@ -15,6 +15,7 @@ struct MouseContext
     Point lastPoint;
     Point changePoint;
 };
+
 class Mouse
 {
 public:
@@ -32,7 +33,7 @@ public:
 
 private:
     MouseContext mMouseContext;
-    bool mShouldCaptureEvents;
-    bool mFirstMove;
+    bool         mShouldCaptureEvents;
+    bool         mFirstMove;
 };
 #endif  // OPENGL_PBR_MOUSE_HXX

@@ -2,12 +2,8 @@
 
 #include "common/Logging.hxx"
 
-Texture::Texture(const char* fileLoc)
-    : mTextureID{ 0U }
-    , mWidth{ 0U }
-    , mHeight{ 0U }
-    , mBitDepth{ 0U }
-    , mFileLocation{ fileLoc }
+Texture::Texture(const char* fileLoc, TextureType textureType)
+    : mTextureContext{ 0U, 0U, 0U, 0U, fileLoc, textureType }
 {
 }
 
@@ -16,29 +12,48 @@ Texture::~Texture()
     clearTexture();
 }
 
+TextureType Texture::getTextureType()
+{
+    return mTextureContext.textureType;
+}
+
 void Texture::loadTexture()
 {
-    unsigned char* texData = stbi_load(mFileLocation.c_str(), &mWidth, &mHeight, &mBitDepth, 0);
+    unsigned char* texData = stbi_load(
+            mTextureContext.fileLocation.c_str(),
+            &mTextureContext.width,
+            &mTextureContext.height,
+            &mTextureContext.bitDepth,
+            0);
 
     if (!texData)
     {
-        std::string log{ "Failed to load texture " + mFileLocation };
+        std::string log{ "Failed to load texture " + mTextureContext.fileLocation };
         OGL_CORE_ERROR(log.c_str());
     }
     else
     {
-        glGenTextures(1, &mTextureID);
-        glBindTexture(GL_TEXTURE_2D, mTextureID);
+        glGenTextures(1, &mTextureContext.textureID);
+        glBindTexture(GL_TEXTURE_2D, mTextureContext.textureID);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri((int) mTextureContext.textureType, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri((int) mTextureContext.textureType, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri((int) mTextureContext.textureType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri((int) mTextureContext.textureType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexImage2D(
+                (int) mTextureContext.textureType,
+                0,
+                GL_RGBA,
+                mTextureContext.width,
+                mTextureContext.height,
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                texData);
+        glGenerateMipmap((int) mTextureContext.textureType);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture((int) mTextureContext.textureType, 0);
         stbi_image_free(texData);
         OGL_CORE_INFO("Successively loaded texture\n.");
     }
@@ -47,15 +62,15 @@ void Texture::loadTexture()
 void Texture::useTexture()
 {
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mTextureID);
+    glBindTexture((int) mTextureContext.textureType, mTextureContext.textureID);
 }
 
 void Texture::clearTexture()
 {
-    glDeleteTextures(1, &mTextureID);
-    mTextureID = 0;
-    mWidth     = 0;
-    mHeight    = 0;
-    mBitDepth  = 0;
-    mFileLocation.clear();
+    glDeleteTextures(1, &mTextureContext.textureID);
+    mTextureContext.textureID = 0;
+    mTextureContext.width     = 0;
+    mTextureContext.height    = 0;
+    mTextureContext.bitDepth  = 0;
+    mTextureContext.fileLocation.clear();
 }

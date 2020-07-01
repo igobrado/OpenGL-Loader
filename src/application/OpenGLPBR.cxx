@@ -31,17 +31,13 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mImGui{ *mWindow, "#version 330", 2 }
     , mMeshList{}
     , mShaderList{}
-    , mBrickTexture{"../res/textures/brick.png"}
-    , mDirtTexture{"../res/textures/dirt.png"}
     , mVertexShader{ VERTEX_SHADER }
     , mFragmentShader{ FRAGMENT_SHADER }
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
-    , mFirstDraw{true}
+    , mFirstDraw{ true }
 
 {
-    mBrickTexture.loadTexture();
-    mDirtTexture.loadTexture();
     auto eventCallbackFN = [this](Event& e) {
         switch (e.category())
         {
@@ -111,10 +107,10 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
 
     for (auto& mesh : mMeshList)
     {
-        if (!i)
-            mBrickTexture.useTexture();
-        else
-            mDirtTexture.useTexture();
+        // if (!i)
+        //    mBrickTexture.useTexture();
+        // else
+        //    mDirtTexture.useTexture();
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));
         if (mFirstDraw)
         {
@@ -166,9 +162,16 @@ void OpenGLPBR::createObjects()
              0.0f,  1.0f, 0.0f,    0.5f, 1.0f,
     };
     // clang-format on
+    Texture brickTexture{ "../res/textures/brick.png" };
+    Texture dirtTexture{ "../res/textures/dirt.png" };
 
-    mMeshList.push_back(std::make_unique<Mesh>());
-    mMeshList.push_back(std::make_unique<Mesh>());
+    auto mesh    = std::make_unique<Mesh>();
+    auto meshTwo = std::make_unique<Mesh>();
+    mesh->setTexture(brickTexture);
+    meshTwo->setTexture(dirtTexture);
+
+    mMeshList.push_back(std::move(mesh));
+    mMeshList.push_back(std::move(meshTwo));
 
     for (auto& mesh : mMeshList)
     {
@@ -177,7 +180,6 @@ void OpenGLPBR::createObjects()
 }
 
 constexpr float OpenGLPBR::toRadians(float angle)
-
 {
     return (glm::pi<float>() / 180.0f) * angle;
 }

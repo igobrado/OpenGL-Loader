@@ -9,9 +9,8 @@
 #include "IApplication.hxx"
 #include "ImGuiAbstraction/ImGuiAbstraction.hxx"
 #include "Mesh.hxx"
-#include "Texture.hxx"
-
 #include "Shader.hxx"
+#include "Texture.hxx"
 #include "Window.hxx"
 
 class OpenGLPBR : public IApplication
@@ -40,10 +39,8 @@ private:
 
     std::vector<std::unique_ptr<Mesh>>   mMeshList;
     std::vector<std::unique_ptr<Shader>> mShaderList;
-    Texture mBrickTexture;
-    Texture mDirtTexture;
-    const char* mVertexShader;
-    const char* mFragmentShader;
+    const char*                          mVertexShader;
+    const char*                          mFragmentShader;
 
     float mDeltaTime;
     float mLastTime;

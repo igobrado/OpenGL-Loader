@@ -5,6 +5,7 @@ Mesh::Mesh()  //
     , mVbo{ 0 }
     , mIbo{ 0 }
     , mIndexCount{ 0 }
+    , mTexture{ nullptr }
 {
 }
 
@@ -36,6 +37,10 @@ void Mesh::createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& 
 
 void Mesh::renderMesh()
 {
+    if (mTexture)
+    {
+        mTexture->useTexture();
+    }
     // BIND VAO for rendering mesh - BOUND FIRST, UNBOUND LAST
     BindVAORenderMesh bindVaoRenderMesh{ mVao };
     // BIND IBO for rendering mesh - BOUND SECOND, UNBOUND FIRST
@@ -64,5 +69,13 @@ void Mesh::clearMesh()
         mVao = 0;
     }
 
+    delete mTexture;
+    mTexture    = nullptr;
     mIndexCount = 0;
+}
+
+void Mesh::setTexture(Texture texture)
+{
+    mTexture = new Texture(texture);
+    mTexture->loadTexture();
 }

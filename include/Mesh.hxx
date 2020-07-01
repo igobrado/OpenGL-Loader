@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include "Texture.hxx"
+
 class Mesh
 {
 public:
@@ -14,12 +16,15 @@ public:
     void renderMesh();
     void clearMesh();
 
+    void setTexture(Texture texture);
+
 private:
     std::uint32_t mVao;
     std::uint32_t mVbo;
     std::uint32_t mIbo;
 
     std::size_t mIndexCount;
+    Texture*    mTexture;
     enum class DrawType
     {
         GL_STATIC  = GL_STATIC_DRAW,
