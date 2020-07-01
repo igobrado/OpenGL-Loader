@@ -22,6 +22,7 @@ public:
         , mRotateAroundAxises{ true, false, false }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
+        , mResetCamera{ false }
     {
         for (auto& factor : mScalingFactors)
         {
@@ -34,6 +35,7 @@ public:
         {
             factor[2] = -2.5f;
         }
+
     }
 
     ImGuiAbstraction(GLFWwindow* window, const char* glslVersion, std::uint8_t numberOfMeshes)
@@ -43,6 +45,8 @@ public:
         , mRotateAroundAxises{ true, false, false }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
+        , mResetCamera{ false }
+
     {
         for (auto& factor : mScalingFactors)
         {
@@ -55,8 +59,18 @@ public:
         {
             factor[2] = -2.5f;
         }
-
+        mTranslateFactors[1].at(1) = 2.0f;
         initializeImGui(glslVersion);
+    }
+
+    bool resetCameraPosition()
+    {
+        if (mResetCamera)
+        {
+            mResetCamera = false;
+            return true;
+        }
+        return false;
     }
 
     const float getRotationAngle() const
@@ -110,6 +124,7 @@ public:
         ImGui::Checkbox("Rotate around X axis", &mRotateAroundAxises[0]);
         ImGui::Checkbox("Rotate around Y axis", &mRotateAroundAxises[1]);
         ImGui::Checkbox("Rotate around Z axis", &mRotateAroundAxises[2]);
+        ImGui::Checkbox("ResetCameraContext", &mResetCamera);
 
         ImGui::SliderFloat3("Translate object one", &mTranslateFactors[0][0], -10.0f, 10.0f);
         ImGui::SliderFloat3("Translate object two", &mTranslateFactors[1][0], -10.0f, 10.0f);
@@ -148,6 +163,7 @@ private:
     std::vector<std::array<float, 3>> mScalingFactors;
     std::array<float, 4>              mColorOfScreen;
     std::array<bool, 3>               mRotateAroundAxises;
+    bool                              mResetCamera;
 
     float       mRotationAngle;
     GLFWwindow* mWindowRef;

@@ -1,56 +1,57 @@
-#include "Event.hxx"
+#include "EventSystem/Event.hxx"
 
+#include "EventSystem/EventDispatcher.hxx"
 #include "Window.hxx"
 
-KeyboardEvent::KeyboardEvent(int action, int key, Keyboard& keyboard, Window& window)  //
-    : mAction{ action }
-    , mKey{ key }
+KeyboardEvent::KeyboardEvent(int key, Keyboard* keyboard, Window* window, Mouse* mouse)  //
+    : mKey{ key }
     , mKeyboard{ keyboard }
     , mWindow{ window }
+    , mMouse{ mouse }
 {
 }
 
-void KeyboardEvent::handle()
+std::string KeyboardEvent::toString()
 {
-    if (mAction == GLFW_PRESS && mKey == GLFW_KEY_ESCAPE)
-    {
-        glfwSetWindowShouldClose(mWindow, GL_TRUE);
-    }
+    return std::string{ "Keyboard event. Pressed Key :" + std::to_string(mKey) };
+}
 
-    if ((mKey >= 0) && (mKey < mKeyboard.getKeys().size()))
-    {
-        bool isKeyPressed            = mAction == GLFW_PRESS;
-        mKeyboard.getKeys().at(mKey) = isKeyPressed;
+void KeyboardEvent::setKeyboardHandle(Keyboard* keyboard)
+{
+    mKeyboard = keyboard;
+}
 
-        if (mKey == GLFW_KEY_SPACE && isKeyPressed)
+void KeyboardEvent::setMouseHandle(Mouse* mouse)
+{
+    mMouse = mouse;
+}
+
+void KeyboardPressEvent::handle()
+{
+    if ((mKey >= 0) && (mKey < mKeyboard->getKeys().size()))
+    {
+        mKeyboard->getKeys().at(mKey) = true;
+        if (mKey == GLFW_KEY_SPACE && glfwGetWindowAttrib(*mWindow, GLFW_FOCUSED))
         {
-            mWindow.toggleMouseVisible();
+            mWindow->toggleMouseVisible();
+            mMouse->toggleCaptureEvents();
+        }
+        else if (mKey == GLFW_KEY_ESCAPE)
+        {
+            glfwSetWindowShouldClose(*mWindow, true);
         }
     }
 }
 
-MouseMoveEvent::MouseMoveEvent(Mouse& mouse, double xPos, double yPos)  //
-    : mMouse{ mouse }
-    , mXPos{ xPos }
-    , mYPos{ yPos }
+std::string KeyboardReleaseEvent::toString()
 {
+    return std::string{ "Keyboard event. Released Key :" + std::to_string(mKey) };
 }
 
-void MouseMoveEvent::handle()
+void KeyboardReleaseEvent::handle()
 {
-    auto& lastAndChangePoint = mMouse.getMouseContext();
-    auto& lastPoint          = lastAndChangePoint.lastPoint;
-    auto& changePoint        = lastAndChangePoint.changePoint;
-    if (mMouse.mouseFirstMoved())
+    if ((mKey >= 0) && (mKey < mKeyboard->getKeys().size()))
     {
-        lastPoint.X = mXPos;
-        lastPoint.Y = mYPos;
-        mMouse.toggleMouseFirstMoved();
+        mKeyboard->getKeys().at(mKey) = false;
     }
-
-    changePoint.X = mXPos - lastPoint.X;
-    changePoint.Y = lastPoint.Y - mYPos;  /// TO AVOID INVERTED CAMERA
-
-    lastPoint.X = mXPos;
-    lastPoint.Y = mYPos;
 }

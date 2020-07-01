@@ -5,9 +5,12 @@
 #include <memory>
 #include <vector>
 
+#include "EventSystem/EventDispatcher.hxx"
 #include "IApplication.hxx"
 #include "ImGuiAbstraction/ImGuiAbstraction.hxx"
 #include "Mesh.hxx"
+#include "Texture.hxx"
+
 #include "Shader.hxx"
 #include "Window.hxx"
 
@@ -15,6 +18,7 @@ class OpenGLPBR : public IApplication
 {
 public:
     OpenGLPBR(const std::uint32_t windowWidth, const std::uint32_t windowHeight);
+    ~OpenGLPBR();
     int run() override;
 
 protected:
@@ -36,7 +40,8 @@ private:
 
     std::vector<std::unique_ptr<Mesh>>   mMeshList;
     std::vector<std::unique_ptr<Shader>> mShaderList;
-
+    Texture mBrickTexture;
+    Texture mDirtTexture;
     const char* mVertexShader;
     const char* mFragmentShader;
 
@@ -61,6 +66,7 @@ private:
     private:
         DefaultCameraContext();
     };
+    bool mFirstDraw;
 };
 
 #endif  // OPENGL_PBR_OPENGLPBR_HXX

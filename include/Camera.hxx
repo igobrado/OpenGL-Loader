@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,10 +21,13 @@ public:
            float     startMovementSpeed,
            float     startTurnSpeed);
 
-    void keyControl(const Keyboard& keyboard, float deltaTime);
-    void mouseControl(Mouse& mouse);
+    void resetCameraContext();
 
+    void      keyControl(const Keyboard& keyboard, float deltaTime);
+    void      mouseControl(Mouse& mouse);
     glm::mat4 claculateViewMatrix();
+
+    std::function<void(float, float, bool)> getOnMouseMoveCallbackFN();
 
 protected:
     void update();
@@ -39,10 +43,25 @@ private:
 
         float yaw;
         float pitch;
-    } mCameraContext;
+
+        const CameraContext& operator=(const CameraContext& defaultCameraContext)
+        {
+            position = defaultCameraContext.position;
+            front    = defaultCameraContext.front;
+            up       = defaultCameraContext.up;
+            right    = defaultCameraContext.right;
+            worldUp  = defaultCameraContext.worldUp;
+            yaw      = defaultCameraContext.yaw;
+            pitch    = defaultCameraContext.pitch;
+
+            return *this;
+        }
+    } mCameraContext, mDefaultCameraContext;
 
     float mMovementSpeed;
     float mTurnSpeed;
+
+    bool mCaptureMouseEvents;
 };
 
 #endif  // OPENGL_PBR_CAMERA_H

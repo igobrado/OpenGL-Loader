@@ -61,15 +61,20 @@ else()
     set(IMGUI_EXAMPLES_DIR "${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/examples")
 endif()
 
+list (APPEND OPENGL_PBR_HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/vendor/stb_image.h")
+
 include("${CMAKE_CURRENT_LIST_DIR}/include/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 target_include_directories(
         OpenGL-PBR PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/vendor/spdlog/include"
+        "${CMAKE_CURRENT_LIST_DIR}/vendor"
         "${CMAKE_CURRENT_LIST_DIR}/include/"
         "${CMAKE_CURRENT_LIST_DIR}/src/application"
         "${OPENGL_INCLUDE_DIRS}"

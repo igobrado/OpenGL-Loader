@@ -8,15 +8,29 @@ Camera::Camera(
         float     startMovementSpeed,
         float     startTurnSpeed)  //
     : mCameraContext{ startPosition,
-                      glm::vec3(0.0f, -1.0f, 0.0f),
-                      glm::vec3{ 0.0f, 0.0f, 0.0f },
+                      glm::vec3(0.0f, 0.0f, 1.0f),
+                      glm::vec3{ 0.0f, 0.0f, -1.0f },
                       glm::vec3{ 0.0f, 0.0f, 0.0f },
                       startUp,
                       startYaw,
                       startPitch }
+    , mDefaultCameraContext{ startPosition,
+                             glm::vec3(0.0f, 0.0f, 1.0f),
+                             glm::vec3{ 0.0f, 0.0f, 0.0f },
+                             glm::vec3{ 0.0f, 0.0f, 0.0f },
+                             startUp,
+                             startYaw,
+                             startPitch }
     , mMovementSpeed{ startMovementSpeed }
     , mTurnSpeed{ startTurnSpeed }
+    , mCaptureMouseEvents{ false }
 {
+    update();
+}
+
+void Camera::resetCameraContext()
+{
+    mCameraContext = mDefaultCameraContext;
     update();
 }
 
@@ -54,11 +68,30 @@ void Camera::keyControl(const Keyboard& keyboard, float deltaTime)
 
 void Camera::mouseControl(Mouse& mouse)
 {
-    if (mouse.captureEvents())
-    {
-        float xChange = mouse.getXChange();
-        float yChange = mouse.getYChange();
+    // TODO: CAPTURE ONLY IF MOUSE IS AVAILABLE
+    float xChange = mouse.getXChange();
+    float yChange = mouse.getYChange();
 
+    xChange *= mTurnSpeed;
+    yChange *= mTurnSpeed;
+
+    mCameraContext.yaw += xChange;
+    mCameraContext.pitch += yChange;
+
+    mCameraContext.pitch = mCameraContext.pitch > 89.9f ? 89.0f : mCameraContext.pitch;
+    mCameraContext.pitch = mCameraContext.pitch < -89.9f ? -89.0f : mCameraContext.pitch;
+
+    update();
+}
+
+glm::mat4 Camera::claculateViewMatrix()
+{
+    return glm::lookAt(mCameraContext.position, mCameraContext.position + mCameraContext.front, mCameraContext.up);
+}
+
+std::function<void(float, float, bool)> Camera::getOnMouseMoveCallbackFN()
+{
+    return [this](float xChange, float yChange, bool callUpdate) {
         xChange *= mTurnSpeed;
         yChange *= mTurnSpeed;
 
@@ -68,11 +101,9 @@ void Camera::mouseControl(Mouse& mouse)
         mCameraContext.pitch = mCameraContext.pitch > 89.9f ? 89.0f : mCameraContext.pitch;
         mCameraContext.pitch = mCameraContext.pitch < -89.9f ? -89.0f : mCameraContext.pitch;
 
-        update();
-    }
-}
-
-glm::mat4 Camera::claculateViewMatrix()
-{
-    return glm::lookAt(mCameraContext.position, mCameraContext.position + mCameraContext.front, mCameraContext.up);
+        if (callUpdate)
+        {
+            update();
+        }
+    };
 }

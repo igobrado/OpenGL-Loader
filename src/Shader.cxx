@@ -1,3 +1,4 @@
+#include <sstream>
 #include "Shader.hxx"
 
 #include "common/Logging.hxx"
@@ -90,7 +91,8 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     if (!result)
     {
         glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        OGL_CORE_ERROR("Error linking program: %s\n", eLog);
+        std::string out {"Error linking program: " + std::string {eLog} + "\n"};
+        OGL_CORE_ERROR(out.c_str());
         return;
     }
 
@@ -99,7 +101,8 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     if (!result)
     {
         glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        OGL_CORE_ERROR("Error validating program: %s\n", eLog);
+        std::string out {"Error validating program: " + std::string {eLog} + "\n"};
+        OGL_CORE_ERROR(out.c_str());
         return;
     }
 

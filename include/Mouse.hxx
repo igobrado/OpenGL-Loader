@@ -22,7 +22,6 @@ public:
 
     bool captureEvents();
     void toggleCaptureEvents();
-
     bool mouseFirstMoved();
 
     void  toggleMouseFirstMoved();
@@ -33,9 +32,6 @@ public:
 
 private:
     MouseContext mMouseContext;
-    Point        mLastPoint;
-    Point        mChangePoint;
-
     bool mShouldCaptureEvents;
     bool mFirstMove;
 };

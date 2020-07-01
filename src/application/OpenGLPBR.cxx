@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "EventSystem/MoveEvents.hxx"
+
 #define VERTEX_SHADER   "../res/vertex.glsl"
 #define FRAGMENT_SHADER "../res/fragment.glsl"
 
@@ -25,23 +27,52 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mMouse{}
     , mKeyboard{}
     , mEventDispatcher{ std::make_shared<EventDispatcher>(mKeyboard, mMouse) }
-    , mWindow{ std::make_unique<Window>(windowWidth, windowHeight, *mEventDispatcher) }
+    , mWindow{ std::make_unique<Window>(windowWidth, windowHeight) }
     , mImGui{ *mWindow, "#version 330", 2 }
     , mMeshList{}
     , mShaderList{}
+    , mBrickTexture{"../res/textures/brick.png"}
+    , mDirtTexture{"../res/textures/dirt.png"}
     , mVertexShader{ VERTEX_SHADER }
     , mFragmentShader{ FRAGMENT_SHADER }
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
+    , mFirstDraw{true}
+
 {
+    mBrickTexture.loadTexture();
+    mDirtTexture.loadTexture();
+    auto eventCallbackFN = [this](Event& e) {
+        switch (e.category())
+        {
+            case EventCategory::KEYBOARD:
+                dynamic_cast<KeyboardEvent&>(e).setKeyboardHandle(&mKeyboard);
+                dynamic_cast<KeyboardEvent&>(e).setMouseHandle(&mMouse);
+                break;
+            case EventCategory::MOUSE:
+                dynamic_cast<MouseMoveEvent&>(e).setMouseHandle(&mMouse);
+                dynamic_cast<MouseMoveEvent&>(e).setCameraUpdateCallback(mCamera.getOnMouseMoveCallbackFN());
+                break;
+            case EventCategory::CAMERA:
+                break;
+        }
+        mEventDispatcher->dispatch(e);
+    };
+
+    mWindow->setEventCallbackFunction(std::move(eventCallbackFN));
     createObjects();
     createShaders();
+}
+
+OpenGLPBR::~OpenGLPBR()
+{
+    OGL_CORE_WARN("Terminating application.\n");
 }
 
 int OpenGLPBR::run()
 {
     glm::mat4 projectionMatrix = glm::perspective(
-            45.0f,
+            glm::radians(45.0f),
             (GLfloat) mWindow->getBufferWidth() / (GLfloat) mWindow->getBufferHeight(),
             0.1f,
             100.0f);
@@ -50,10 +81,10 @@ int OpenGLPBR::run()
         float now  = glfwGetTime();
         mDeltaTime = now - mLastTime;
         mLastTime  = now;
-
         glfwPollEvents();
+
         mCamera.keyControl(mKeyboard, mDeltaTime);
-        mCamera.mouseControl(mMouse);
+        // mCamera.mouseControl(mMouse);
         update(projectionMatrix);
         glfwSwapBuffers(*mWindow);
     }
@@ -70,11 +101,28 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
     mShaderList[0]->useShader();
     glm::mat4 model{ 1.0f };
     int       i = 0;
+
+    if (mImGui.resetCameraPosition())
+    {
+        mCamera.resetCameraContext();
+    }
+
     glUniformMatrix4fv(mShaderList[0]->getViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.claculateViewMatrix()));
+
     for (auto& mesh : mMeshList)
     {
+        if (!i)
+            mBrickTexture.useTexture();
+        else
+            mDirtTexture.useTexture();
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));
+        if (mFirstDraw)
+        {
+
+            mFirstDraw = false;
+        }
         model = glm::rotate(model, toRadians(mImGui.getRotationAngle()), mImGui.getRotationRotationFactorVec3());
+        model = glm::rotate(model, toRadians(180), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
         glUniformMatrix4fv(mShaderList[0]->getModelMatrixLocation(), 1, GL_FALSE, glm::value_ptr(model));
@@ -111,10 +159,11 @@ void OpenGLPBR::createObjects()
     };
 
     std::vector<float> vertices = {
-            -1.0f, -1.0f, 0.0f,
-             0.0f, -1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f,
-             0.0f,  1.0f, 0.0f
+             //x     y     z        U     v
+            -1.0f, -1.0f, 0.0f,    0.0f, 0.0f,
+             0.0f, -1.0f, 1.0f,    0.5,  0.0f,
+             1.0f, -1.0f, 0.0f,    1.0f, 0.0f,
+             0.0f,  1.0f, 0.0f,    0.5f, 1.0f,
     };
     // clang-format on
 

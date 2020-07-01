@@ -26,7 +26,12 @@ void Mesh::createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& 
     BindUnbindVBOCreateMesh vboBind{ mVbo, vertices, DrawType::GL_STATIC };
 
     // BIND Vertex attrib pointer, BIND FOURTH, UNBIND FIRST
-    BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointer{ 0, 3, GL_FLOAT, false, 0, 0 };
+    BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointer{
+        0, 3, GL_FLOAT, false, sizeof(vertices[0]) * 5, 0
+    };
+    BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointerForTextures{
+        1, 2, GL_FLOAT, false, sizeof(vertices[0]) * 5, reinterpret_cast<void*>(sizeof(vertices[0]) * 3)
+    };
 }
 
 void Mesh::renderMesh()

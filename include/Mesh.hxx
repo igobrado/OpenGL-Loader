@@ -87,14 +87,18 @@ private:
                 bool         normalized,
                 int          stride,
                 const void*  ptr)
+            : mIndex{ index }
         {
             glVertexAttribPointer(index, size, type, false, stride, ptr);
         }
 
         ~BindUnbindVertexAttribPointerCreateMesh()
         {
-            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(mIndex);
         }
+
+    private:
+        unsigned int mIndex;
     };
     struct BindVAORenderMesh
     {

@@ -1,20 +1,15 @@
 #include "Mouse.hxx"
 
-#include <sstream>
-
-#include "Window.hxx"
-
 Mouse::Mouse()  //
     : mMouseContext{ Point{ 0.0f, 0.0f }, Point{ 0.0f, 0.0f } }
     , mFirstMove{ false }
-    , mShouldCaptureEvents{ true }
-
+    , mShouldCaptureEvents{ false }
 {
 }
 
 bool Mouse::captureEvents()
 {
-    return mShouldCaptureEvents;
+    return !mShouldCaptureEvents;
 }
 
 void Mouse::toggleCaptureEvents()
@@ -30,7 +25,6 @@ bool Mouse::mouseFirstMoved()
 
 void Mouse::toggleMouseFirstMoved()
 {
-
     mFirstMove = !mFirstMove;
 }
 
@@ -50,6 +44,5 @@ float Mouse::getYChange()
 
 MouseContext& Mouse::getMouseContext()
 {
-
     return mMouseContext;
 }
