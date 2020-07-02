@@ -36,7 +36,11 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
-    , mLight{ mImGui.ambientLightColor(), mImGui.ambientIntensity(), nullptr }
+    , mLight{ mImGui.ambientLightColor(),
+              mImGui.ambientIntensityControl(),
+              nullptr,
+              glm::vec3(2.0f, -1.0f, -2.0f),
+              1.0f }
 
 {
     auto eventCallbackFN = [this](Event& e) {
@@ -118,7 +122,10 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
 
             mFirstDraw = false;
         }
-        model = glm::rotate(model, toRadians(mImGui.getRotationAngle()), mImGui.getRotationRotationFactorVec3());
+        model = glm::rotate(
+                model,
+                toRadians(mImGui.getRotationAngleControl()),
+                mImGui.getRotationRotationFactorVec3());
         model = glm::rotate(model, toRadians(180), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
@@ -158,11 +165,11 @@ void OpenGLPBR::createObjects()
     };
 
     std::vector<float> vertices = {
-             //x     y     z        U     v
-            -1.0f, -1.0f, 0.0f,    0.0f, 0.0f,
-             0.0f, -1.0f, 1.0f,    0.5,  0.0f,
-             1.0f, -1.0f, 0.0f,    1.0f, 0.0f,
-             0.0f,  1.0f, 0.0f,    0.5f, 1.0f,
+             //x     y     z        U     V       nx    ny    nz
+            -1.0f, -1.0f, 0.0f,    0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
+             0.0f, -1.0f, 1.0f,    0.5f, 0.0f,   0.0f, 0.0f, 0.0f,
+             1.0f, -1.0f, 0.0f,    1.0f, 0.0f,   0.0f, 0.0f, 0.0f,
+             0.0f,  1.0f, 0.0f,    0.5f, 1.0f,   0.0f, 0.0f, 0.0f,
     };
     // clang-format on
     Texture brickTexture{ "../res/textures/brick.png" };
@@ -170,6 +177,8 @@ void OpenGLPBR::createObjects()
 
     auto mesh    = std::make_unique<Mesh>();
     auto meshTwo = std::make_unique<Mesh>();
+    calculateAvgNormals(indices, vertices, 8, 5);
+
     mesh->setTexture(brickTexture);
     meshTwo->setTexture(dirtTexture);
 
@@ -180,6 +189,51 @@ void OpenGLPBR::createObjects()
     {
         mesh->createMesh(vertices, indices);
     }
+}
+
+void OpenGLPBR::calculateAvgNormals(
+        std::vector<unsigned int>& indices,
+        std::vector<float>&        vertices,
+        unsigned int               vLength,
+        unsigned int               normalOffset)
+{
+    // clang-format off
+    auto data = indices.data();
+    for (size_t i = 0; i < indices.size(); i += 3)
+    {
+        unsigned int in0 = data[i] * vLength;
+        unsigned int in1 = data[i + 1] * vLength;
+        unsigned int in2 = data[i + 2] * vLength;
+
+        glm::vec3 v1{vertices[in1] - vertices[in0], vertices[in1 + 1] - vertices[in0 + 1], vertices[in1 + 2] - vertices[in0 + 2]};
+        glm::vec3 v2{vertices[in2] - vertices[in0], vertices[in2 + 1] - vertices[in0 + 1], vertices[in2 + 2] - vertices[in0 + 2]};
+        glm::vec3 normal = glm::cross(v1, v2);
+        normal = glm::normalize(normal);
+
+        vertices[in0 + normalOffset    ] += normal.x;
+        vertices[in0 + normalOffset + 1] += normal.y;
+        vertices[in0 + normalOffset + 2] += normal.z;
+
+        vertices[in1 + normalOffset    ] += normal.x;
+        vertices[in1 + normalOffset + 1] += normal.y;
+        vertices[in1 + normalOffset + 2] += normal.z;
+
+        vertices[in2 + normalOffset    ] += normal.x;
+        vertices[in2 + normalOffset + 1] += normal.y;
+        vertices[in2 + normalOffset + 2] += normal.z;
+    }
+
+    for (size_t i = 0; i < vertices.size() / vLength; i++)
+    {
+            unsigned int nOffset = i * vLength + normalOffset;
+            glm::vec3 vec{vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 2]};
+            vec = glm::normalize(vec);
+
+            vertices[nOffset] = vec.x;
+            vertices[nOffset + 1] = vec.y;
+            vertices[nOffset + 2] = vec.z;
+    }
+    // clang-format on
 }
 
 constexpr float OpenGLPBR::toRadians(float angle)

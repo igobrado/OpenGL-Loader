@@ -26,9 +26,9 @@ public:
     std::uint32_t getModelMatrixLocation() const;
     std::uint32_t getViewLocation() const;
     std::uint32_t getUniformAmbientIntensityLocation() const;
-    std::uint32_t getUniformAmbientColorLocation() const;
-
-    std::uint32_t getUniformLocation(const char* uniformName);
+    std::uint32_t getUniformColorLocation() const;
+    std::uint32_t getUniformDiffuseIntensityLocation() const;
+    std::uint32_t getUniformDirectionLocation() const;
 
     void useShader();
     void clearShader();
@@ -44,7 +44,9 @@ private:
     std::uint32_t mUniformModel;
     std::uint32_t mUniformView;
     std::uint32_t mUniformAmbientIntensity;
-    std::uint32_t mUniformAmbientColor;
+    std::uint32_t mUniformColor;
+    std::uint32_t mUniformDiffuseIntensity;
+    std::uint32_t mUniformDirection;
 };
 
 #endif  // OPENGL_PBR_SHADER_HXX

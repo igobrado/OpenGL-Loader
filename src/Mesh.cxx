@@ -28,10 +28,14 @@ void Mesh::createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& 
 
     // BIND Vertex attrib pointer, BIND FOURTH, UNBIND FIRST
     BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointer{
-        0, 3, GL_FLOAT, false, sizeof(vertices[0]) * 5, 0
+        0, 3, GL_FLOAT, false, sizeof(vertices[0]) * 8, 0
     };
     BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointerForTextures{
-        1, 2, GL_FLOAT, false, sizeof(vertices[0]) * 5, reinterpret_cast<void*>(sizeof(vertices[0]) * 3)
+        1, 2, GL_FLOAT, false, sizeof(vertices[0]) * 8, reinterpret_cast<void*>(sizeof(vertices[0]) * 3)
+    };
+
+    BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointerForLightning{
+        2, 3, GL_FLOAT, false, sizeof(vertices[0]) * 8, reinterpret_cast<void*>(sizeof(vertices[0]) * 5)
     };
 }
 

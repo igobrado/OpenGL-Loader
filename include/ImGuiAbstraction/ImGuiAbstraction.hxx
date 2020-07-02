@@ -20,12 +20,12 @@ public:
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
         , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-        , mAmbientLight{ 1.0f, 1.0f, 1.0f }
+        , mAmbientLightControl{ 1.0f, 1.0f, 1.0f }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
         , mResetCamera{ false }
         , mAmbientLightColor{ 1.0f, 1.0f, 1.0f }
-        , mAmbientIntensity{ 1.0f }
+        , mAmbientIntensityControl{ 1.0f }
     {
         for (auto& factor : mScalingFactors)
         {
@@ -45,11 +45,11 @@ public:
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
         , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-        , mAmbientLight{ 1.0f, 1.0f, 1.0f }
+        , mAmbientLightControl{ 1.0f, 1.0f, 1.0f }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
         , mResetCamera{ false }
-        , mAmbientIntensity{ 1.0f }
+        , mAmbientIntensityControl{ 1.0f }
     {
         for (auto& factor : mScalingFactors)
         {
@@ -77,15 +77,16 @@ public:
         return false;
     }
 
-    const float getRotationAngle() const
+    const float getRotationAngleControl() const
     {
         return mRotationAngle;
     }
 
-    float& ambientIntensity()
+    float& ambientIntensityControl()
     {
-        return mAmbientIntensity;
+        return mAmbientIntensityControl;
     }
+
     glm::vec3& ambientLightColor()
     {
         return mAmbientLightColor;
@@ -133,7 +134,7 @@ public:
         StartEndImGuiFrame startEndImGuiFrame{};
         ImGui::ColorEdit4("Color of screen", mColorOfScreen.data());
         ImGui::SliderFloat("Rotation angle", &mRotationAngle, 0.0f, 360.0f);
-        ImGui::SliderFloat("Ambient intensity", &mAmbientIntensity, 0.0f, 1.0f);
+        ImGui::SliderFloat("Ambient intensity", &mAmbientIntensityControl, 0.0f, 1.0f);
 
         ImGui::Checkbox("Rotate around X axis", &mRotateAroundAxises[0]);
         ImGui::Checkbox("Rotate around Y axis", &mRotateAroundAxises[1]);
@@ -144,11 +145,11 @@ public:
         ImGui::SliderFloat3("Translate object two", &mTranslateFactors[1][0], -10.0f, 10.0f);
         ImGui::SliderFloat3("Scaling XYZ object one", &mScalingFactors[0][0], 0.0f, 1.0f);
         ImGui::SliderFloat3("Scaling XYZ object two", &mScalingFactors[1][0], 0.0f, 1.0f);
-        ImGui::SliderFloat3("Ambient light color", &mAmbientLight[0], 0.0f, 1.0f);
+        ImGui::SliderFloat3("Ambient light color", &mAmbientLightControl[0], 0.0f, 1.0f);
 
-        mAmbientLightColor.x = mAmbientLight[0];
-        mAmbientLightColor.y = mAmbientLight[1];
-        mAmbientLightColor.z = mAmbientLight[2];
+        mAmbientLightColor.x = mAmbientLightControl[0];
+        mAmbientLightColor.y = mAmbientLightControl[1];
+        mAmbientLightColor.z = mAmbientLightControl[2];
     }
 
 protected:
@@ -181,12 +182,12 @@ private:
     std::vector<std::array<float, 3>> mTranslateFactors;
     std::vector<std::array<float, 3>> mScalingFactors;
     std::array<float, 4>              mColorOfScreen;
-    std::array<float, 4>              mAmbientLight;
+    std::array<float, 4>              mAmbientLightControl;
     std::array<bool, 3>               mRotateAroundAxises;
     bool                              mResetCamera;
 
     float       mRotationAngle;
-    float       mAmbientIntensity;
+    float       mAmbientIntensityControl;
     GLFWwindow* mWindowRef;
     glm::vec3   mAmbientLightColor;
 };

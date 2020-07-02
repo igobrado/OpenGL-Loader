@@ -28,6 +28,12 @@ protected:
     void            createObjects();
     constexpr float toRadians(float angle);
 
+    void calculateAvgNormals(
+            std::vector<unsigned int>& indices,
+            std::vector<float>&        vetrices,
+            unsigned int               vLength,
+            unsigned int               normalOffset);
+
 private:
     Camera   mCamera;
     Mouse    mMouse;

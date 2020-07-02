@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "UniformNames.hxx"
 #include "common/Logging.hxx"
 
 Shader::Shader()  //
@@ -50,14 +51,19 @@ std::uint32_t Shader::getUniformAmbientIntensityLocation() const
     return mUniformAmbientIntensity;
 }
 
-std::uint32_t Shader::getUniformAmbientColorLocation() const
+std::uint32_t Shader::getUniformColorLocation() const
 {
-    return mUniformAmbientColor;
+    return mUniformColor;
 }
 
-std::uint32_t Shader::getUniformLocation(const char* uniformName)
+std::uint32_t Shader::getUniformDiffuseIntensityLocation() const
 {
-    return 0;
+    return mUniformDiffuseIntensity;
+}
+
+std::uint32_t Shader::getUniformDirectionLocation() const
+{
+    return mUniformDirection;
 }
 
 void Shader::useShader()
@@ -117,11 +123,13 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
         return;
     }
 
-    mUniformModel            = glGetUniformLocation(mShaderID, "uModel");
-    mUniformProjection       = glGetUniformLocation(mShaderID, "uProjection");
-    mUniformView             = glGetUniformLocation(mShaderID, "uView");
-    mUniformAmbientIntensity = glGetUniformLocation(mShaderID, "directionalLight.ambientIntensity");
-    mUniformAmbientColor     = glGetUniformLocation(mShaderID, "directionalLight.color");
+    mUniformModel            = glGetUniformLocation(mShaderID, uModel);
+    mUniformProjection       = glGetUniformLocation(mShaderID, uProjection);
+    mUniformView             = glGetUniformLocation(mShaderID, uView);
+    mUniformAmbientIntensity = glGetUniformLocation(mShaderID, uAmbientIntensity);
+    mUniformColor            = glGetUniformLocation(mShaderID, uColor);
+    mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, uDiffuseIntensity);
+    mUniformDirection        = glGetUniformLocation(mShaderID, uDirection);
 }
 
 void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType)
