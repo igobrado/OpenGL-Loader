@@ -1,15 +1,15 @@
 #include "Shader.hxx"
 
+#include <glm/gtc/type_ptr.hpp>
 #include <sstream>
 
+#include "GLError.hxx"
 #include "UniformNames.hxx"
 #include "common/Logging.hxx"
-
-Shader::Shader()  //
+Shader::Shader(const char* vertexShader, const char* fragmentShader)  //
     : mShaderID{ 0 }
-    , mUniformProjection{ 0 }
-    , mUniformModel{ 0 }
 {
+    createShaderFromFile(vertexShader, fragmentShader);
 }
 
 Shader::~Shader()
@@ -31,46 +31,29 @@ void Shader::createShaderFromFile(const char* vertexShader, const char* fragment
     OGL_CORE_INFO("Compiling shaders went successfully!");
 }
 
-std::uint32_t Shader::getProjectionMatrixLocation() const
+void Shader::updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4 value)
 {
-    return mUniformProjection;
+    auto uniformLocation = getUniformLocation(uniformName);
+    GlCall(glUniformMatrix4fv(uniformLocation, count, transpose, glm::value_ptr(value)));
 }
 
-std::uint32_t Shader::getModelMatrixLocation() const
+void Shader::updateGlUniform3f(const char* uniformName, glm::vec3 values)
 {
-    return mUniformModel;
+    auto uniformLocation = getUniformLocation(uniformName);
+    GlCall(glUniform3f(uniformLocation, values.x, values.y, values.z));
 }
 
-std::uint32_t Shader::getViewLocation() const
+void Shader::updateUniform1f(const char* uniformName, float& value)
 {
-    return mUniformView;
-}
-
-std::uint32_t Shader::getUniformAmbientIntensityLocation() const
-{
-    return mUniformAmbientIntensity;
-}
-
-std::uint32_t Shader::getUniformColorLocation() const
-{
-    return mUniformColor;
-}
-
-std::uint32_t Shader::getUniformDiffuseIntensityLocation() const
-{
-    return mUniformDiffuseIntensity;
-}
-
-std::uint32_t Shader::getUniformDirectionLocation() const
-{
-    return mUniformDirection;
+    auto uniformLocation = getUniformLocation(uniformName);
+    GlCall(glUniform1f(uniformLocation, value));
 }
 
 void Shader::useShader()
 {
     if (mShaderID)
     {
-        glUseProgram(mShaderID);
+        GlCall(glUseProgram(mShaderID));
     }
     else
     {
@@ -82,11 +65,9 @@ void Shader::clearShader()
 {
     if (!mShaderID)
     {
-        glDeleteProgram(mShaderID);
+        GlCall(glDeleteProgram(mShaderID));
         mShaderID = 0;
     }
-    mUniformModel      = 0;
-    mUniformProjection = 0;
 }
 
 void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
@@ -103,8 +84,8 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     GLint  result{ 0 };
     GLchar eLog[1024]{ 0 };
 
-    glLinkProgram(mShaderID);
-    glGetProgramiv(mShaderID, GL_LINK_STATUS, &result);
+    GlCall(glLinkProgram(mShaderID));
+    GlCall(glGetProgramiv(mShaderID, GL_LINK_STATUS, &result));
     if (!result)
     {
         glGetProgramInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
@@ -122,14 +103,6 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
         OGL_CORE_ERROR(out.c_str());
         return;
     }
-
-    mUniformModel            = glGetUniformLocation(mShaderID, uModel);
-    mUniformProjection       = glGetUniformLocation(mShaderID, uProjection);
-    mUniformView             = glGetUniformLocation(mShaderID, uView);
-    mUniformAmbientIntensity = glGetUniformLocation(mShaderID, uAmbientIntensity);
-    mUniformColor            = glGetUniformLocation(mShaderID, uColor);
-    mUniformDiffuseIntensity = glGetUniformLocation(mShaderID, uDiffuseIntensity);
-    mUniformDirection        = glGetUniformLocation(mShaderID, uDirection);
 }
 
 void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType)
@@ -140,8 +113,8 @@ void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderT
 
     GLint codeLength[1];
     codeLength[0] = std::strlen(shaderCode);
-    glShaderSource(theShader, 1, theCode, codeLength);
-    glCompileShader(theShader);
+    GlCall(glShaderSource(theShader, 1, theCode, codeLength));
+    GlCall(glCompileShader(theShader));
 
     GLint  result{ 0 };
     GLchar eLog[1024]{ 0 };
@@ -178,4 +151,14 @@ std::string Shader::readFile(const char* fileLocation)
         OGL_CORE_ERROR("Failed to open file %s", fileLocation);
     }
     return content;
+}
+
+std::uint32_t Shader::getUniformLocation(const char* uniformName) const
+{
+    if (mUniformCache.find(uniformName) != mUniformCache.end())
+        return mUniformCache[uniformName];
+
+    auto location              = glGetUniformLocation(mShaderID, uniformName);
+    mUniformCache[uniformName] = location;
+    return location;
 }

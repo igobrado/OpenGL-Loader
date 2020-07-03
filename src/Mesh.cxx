@@ -9,9 +9,46 @@ Mesh::Mesh()  //
 {
 }
 
-Mesh::~Mesh()
+Mesh::Mesh(
+        std::vector<float>&         vertices,  //
+        std::vector<std::uint32_t>& indices)
+    : mVao{ 0 }
+    , mVbo{ 0 }
+    , mIbo{ 0 }
+    , mIndexCount{ 0 }
+    , mTexture{ nullptr }
+    , mMaterial{ nullptr }
 {
-    clearMesh();
+    createMesh(vertices, indices);
+}
+
+Mesh::Mesh(
+        std::vector<float>&         vertices,  //
+        std::vector<std::uint32_t>& indices,   //
+        Texture                     texture)
+    : mVao{ 0 }
+    , mVbo{ 0 }
+    , mIbo{ 0 }
+    , mIndexCount{ 0 }
+    , mTexture{ std::make_unique<Texture>(texture) }
+    , mMaterial{ nullptr }
+{
+    createMesh(vertices, indices);
+}
+
+Mesh::Mesh(
+        std::vector<float>&         vertices,  //
+        std::vector<std::uint32_t>& indices,
+        Texture                     texture,
+        Material                    material)
+    : mVao{ 0 }
+    , mVbo{ 0 }
+    , mIbo{ 0 }
+    , mIndexCount{ 0 }
+    , mTexture{ std::make_unique<Texture>(texture) }
+    , mMaterial{ std::make_unique<Material>(material) }
+{
+    createMesh(vertices, indices);
 }
 
 void Mesh::createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices)
@@ -26,14 +63,17 @@ void Mesh::createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& 
     // BIND VBO - BINDS THIRD, UNBIND SECOND
     BindUnbindVBOCreateMesh vboBind{ mVbo, vertices, DrawType::GL_STATIC };
 
-    // BIND Vertex attrib pointer, BIND FOURTH, UNBIND FIRST
+    // BIND Vertex attrib pointer
     BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointer{
         0, 3, GL_FLOAT, false, sizeof(vertices[0]) * 8, 0
     };
+
+    // BIND Vertex attrib pointer for texture
     BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointerForTextures{
         1, 2, GL_FLOAT, false, sizeof(vertices[0]) * 8, reinterpret_cast<void*>(sizeof(vertices[0]) * 3)
     };
 
+    // BIND Vertex attrib pointer for light
     BindUnbindVertexAttribPointerCreateMesh bindVertexAttribPointerForLightning{
         2, 3, GL_FLOAT, false, sizeof(vertices[0]) * 8, reinterpret_cast<void*>(sizeof(vertices[0]) * 5)
     };
@@ -45,41 +85,27 @@ void Mesh::renderMesh()
     {
         mTexture->useTexture();
     }
+
+    if (mMaterial)
+    {
+        mMaterial->use();
+    }
+
     // BIND VAO for rendering mesh - BOUND FIRST, UNBOUND LAST
     BindVAORenderMesh bindVaoRenderMesh{ mVao };
     // BIND IBO for rendering mesh - BOUND SECOND, UNBOUND FIRST
     BindIBORenderMesh bindIboRenderMesh{ mIbo };
 
-    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0);
-}
-
-void Mesh::clearMesh()
-{
-    if (mIbo)
-    {
-        glDeleteBuffers(1, &mIbo);
-        mIbo = 0;
-    }
-
-    if (mVbo)
-    {
-        glDeleteBuffers(1, &mVbo);
-        mVbo = 0;
-    }
-
-    if (mVao)
-    {
-        glDeleteVertexArrays(1, &mVao);
-        mVao = 0;
-    }
-
-    delete mTexture;
-    mTexture    = nullptr;
-    mIndexCount = 0;
+    GlCall(glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, 0));
 }
 
 void Mesh::setTexture(Texture texture)
 {
-    mTexture = new Texture(texture);
+    mTexture = std::make_unique<Texture>(texture);
     mTexture->loadTexture();
+}
+
+void Mesh::setMaterial(Material material)
+{
+    mMaterial = std::make_unique<Material>(material);
 }

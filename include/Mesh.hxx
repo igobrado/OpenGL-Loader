@@ -3,28 +3,73 @@
 
 #include <GL/glew.h>
 
+#include <memory>
 #include <vector>
 
+#include "GLError.hxx"
 #include "Texture.hxx"
+#include "property/Material.hxx"
 
 class Mesh
 {
 public:
     Mesh();
-    ~Mesh();
+    Mesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices);
+    Mesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices, Texture texture);
+    Mesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices, Texture texture, Material material);
+
     void createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices);
     void renderMesh();
     void clearMesh();
 
     void setTexture(Texture texture);
+    void setMaterial(Material material);
 
 private:
-    std::uint32_t mVao;
-    std::uint32_t mVbo;
-    std::uint32_t mIbo;
+    struct Vao
+    {
+        ~Vao()
+        {
+            glDeleteVertexArrays(0, *this);
+        }
 
-    std::size_t mIndexCount;
-    Texture*    mTexture;
+        operator std::uint32_t &()
+        {
+            return vao;
+        }
+
+        operator std::uint32_t *()
+        {
+            return &vao;
+        }
+
+        std::uint32_t vao;
+    } mVao;
+
+    struct BufferObject
+    {
+        ~BufferObject()
+        {
+            glDeleteBuffers(1, *this);
+        }
+
+        operator std::uint32_t &()
+        {
+            return bufferObject;
+        }
+
+        operator std::uint32_t *()
+        {
+            return &bufferObject;
+        }
+        std::uint32_t bufferObject;
+    };
+
+    BufferObject              mIbo;
+    BufferObject              mVbo;
+    std::size_t               mIndexCount;
+    std::unique_ptr<Texture>  mTexture;
+    std::unique_ptr<Material> mMaterial;
     enum class DrawType
     {
         GL_STATIC  = GL_STATIC_DRAW,
@@ -34,13 +79,13 @@ private:
     {
         explicit BindUnbindVAOCreateMesh(std::uint32_t& vao)
         {
-            glGenVertexArrays(1, &vao);
-            glBindVertexArray(vao);
+            GlCall(glGenVertexArrays(1, &vao));
+            GlCall(glBindVertexArray(vao));
         }
 
         ~BindUnbindVAOCreateMesh()
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            GlCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
         }
     };
 
@@ -48,19 +93,19 @@ private:
     {
         BindUnbindIBOCreateMesh(unsigned int& ibo, std::vector<std::uint32_t>& indices, DrawType drawType)
         {
-            glGenBuffers(1, &ibo);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(
+            GlCall(glGenBuffers(1, &ibo));
+            GlCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+            GlCall(glBufferData(
                     GL_ELEMENT_ARRAY_BUFFER,
                     indices.size() * sizeof(indices[0]),
                     indices.data(),
-                    drawType == DrawType::GL_STATIC ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW);
+                    drawType == DrawType::GL_STATIC ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
         }
 
         ~BindUnbindIBOCreateMesh()
         {
             // UNBIND IBO
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            GlCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
         }
     };
 
@@ -68,18 +113,18 @@ private:
     {
         BindUnbindVBOCreateMesh(std::uint32_t& vbo, std::vector<float>& vertices, DrawType drawType)
         {
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(
+            GlCall(glGenBuffers(1, &vbo));
+            GlCall(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+            GlCall(glBufferData(
                     GL_ARRAY_BUFFER,
                     vertices.size() * sizeof(vertices[0]),
                     vertices.data(),
-                    drawType == DrawType::GL_STATIC ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW);
+                    drawType == DrawType::GL_STATIC ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW));
         }
 
         ~BindUnbindVBOCreateMesh()
         {
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            GlCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
         }
     };
 
@@ -94,12 +139,12 @@ private:
                 const void*  ptr)
             : mIndex{ index }
         {
-            glVertexAttribPointer(index, size, type, false, stride, ptr);
+            GlCall(glVertexAttribPointer(index, size, type, false, stride, ptr));
         }
 
         ~BindUnbindVertexAttribPointerCreateMesh()
         {
-            glEnableVertexAttribArray(mIndex);
+            GlCall(glEnableVertexAttribArray(mIndex));
         }
 
     private:
@@ -109,12 +154,12 @@ private:
     {
         explicit BindVAORenderMesh(std::uint32_t& vao)
         {
-            glBindVertexArray(vao);
+            GlCall(glBindVertexArray(vao));
         }
 
         ~BindVAORenderMesh()
         {
-            glBindVertexArray(0);
+            GlCall(glBindVertexArray(0));
         }
     };
 
@@ -122,11 +167,11 @@ private:
     {
         explicit BindIBORenderMesh(std::uint32_t& ibo)
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+            GlCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
         }
         ~BindIBORenderMesh()
         {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            GlCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
         }
     };
 };

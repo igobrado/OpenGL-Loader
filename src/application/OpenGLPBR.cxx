@@ -9,6 +9,8 @@
 #define VERTEX_SHADER   "../res/vertex.glsl"
 #define FRAGMENT_SHADER "../res/fragment.glsl"
 
+#include "UniformNames.hxx"
+
 OpenGLPBR::DefaultCameraContext::DefaultCameraContext()
 
     : startPosition{ 0.0f, 0.0f, 0.0f }
@@ -30,18 +32,15 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mWindow{ std::make_unique<Window>(windowWidth, windowHeight) }
     , mImGui{ *mWindow, "#version 330", 2 }
     , mMeshList{}
-    , mShaderList{}
-    , mVertexShader{ VERTEX_SHADER }
-    , mFragmentShader{ FRAGMENT_SHADER }
+    , mShaderList{ std::make_shared<Shader>(VERTEX_SHADER, FRAGMENT_SHADER) }
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
     , mLight{ mImGui.ambientLightColor(),
               mImGui.ambientIntensityControl(),
-              nullptr,
-              glm::vec3(2.0f, -1.0f, -2.0f),
-              1.0f }
-
+              mShaderList[0],
+              mImGui.lightDirection(),
+              mImGui.diffuseIntensity() }
 {
     auto eventCallbackFN = [this](Event& e) {
         switch (e.category())
@@ -62,7 +61,6 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
 
     mWindow->setEventCallbackFunction(std::move(eventCallbackFN));
     createObjects();
-    createShaders();
 }
 
 OpenGLPBR::~OpenGLPBR()
@@ -108,14 +106,12 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
         mCamera.resetCameraContext();
     }
 
-    glUniformMatrix4fv(mShaderList[0]->getViewLocation(), 1, GL_FALSE, glm::value_ptr(mCamera.claculateViewMatrix()));
+    mShaderList[0]->updateGlUniformMat4(uView, 1, false, mCamera.claculateViewMatrix());
 
     for (auto& mesh : mMeshList)
     {
-        // if (!i)
-        //    mBrickTexture.useTexture();
-        // else
-        //    mDirtTexture.useTexture();
+
+        mShaderList[0]->updateGlUniform3f(uEyePosition, mCamera.getCameraPosition());
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));
         if (mFirstDraw)
         {
@@ -127,31 +123,16 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
                 toRadians(mImGui.getRotationAngleControl()),
                 mImGui.getRotationRotationFactorVec3());
         model = glm::rotate(model, toRadians(180), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
+        // model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
-        mLight.useLight();
-        glUniformMatrix4fv(mShaderList[0]->getModelMatrixLocation(), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(
-                mShaderList[0]->getProjectionMatrixLocation(),
-                1,
-                GL_FALSE,
-                glm::value_ptr(projectionMatrix));
-
+        mLight.use();
+        mShaderList[0]->updateGlUniformMat4(uModel, 1, false, model);
+        mShaderList[0]->updateGlUniformMat4(uProjection, 1, false, projectionMatrix);
         mesh->renderMesh();
         model = glm::mat4{ 1.0f };
         i++;
     }
     mImGui.renderGui();
-}
-
-void OpenGLPBR::createShaders()
-{
-    mShaderList.push_back(std::make_unique<Shader>());
-    for (auto& shader : mShaderList)
-    {
-        shader->createShaderFromFile(mVertexShader, mFragmentShader);
-    }
-    mLight.setShader(mShaderList[0].get());
 }
 
 void OpenGLPBR::createObjects()
@@ -166,10 +147,10 @@ void OpenGLPBR::createObjects()
 
     std::vector<float> vertices = {
              //x     y     z        U     V       nx    ny    nz
-            -1.0f, -1.0f, 0.0f,    0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
-             0.0f, -1.0f, 1.0f,    0.5f, 0.0f,   0.0f, 0.0f, 0.0f,
-             1.0f, -1.0f, 0.0f,    1.0f, 0.0f,   0.0f, 0.0f, 0.0f,
-             0.0f,  1.0f, 0.0f,    0.5f, 1.0f,   0.0f, 0.0f, 0.0f,
+            -1.0f, -1.0f, -0.6f,    0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
+             0.0f, -1.0f,  1.0f,    0.5f, 0.0f,   0.0f, 0.0f, 0.0f,
+             1.0f, -1.0f, -0.6f,    1.0f, 0.0f,   0.0f, 0.0f, 0.0f,
+             0.0f,  1.0f,  0.0f,    0.5f, 1.0f,   0.0f, 0.0f, 0.0f,
     };
     // clang-format on
     Texture brickTexture{ "../res/textures/brick.png" };
@@ -180,7 +161,9 @@ void OpenGLPBR::createObjects()
     calculateAvgNormals(indices, vertices, 8, 5);
 
     mesh->setTexture(brickTexture);
+    mesh->setMaterial(Material{ 1.0f, 32.0f, mShaderList[0] });
     meshTwo->setTexture(dirtTexture);
+    meshTwo->setMaterial(Material{ 0.3f, 4.0f, mShaderList[0] });
 
     mMeshList.push_back(std::move(mesh));
     mMeshList.push_back(std::move(meshTwo));

@@ -45,6 +45,11 @@ void Camera::update()
     mCameraContext.up    = glm::normalize(glm::cross(mCameraContext.right, mCameraContext.front));
 }
 
+glm::vec3 Camera::getCameraPosition()
+{
+    return mCameraContext.position;
+}
+
 void Camera::keyControl(const Keyboard& keyboard, float deltaTime)
 {
     auto velocity = deltaTime * mMovementSpeed;

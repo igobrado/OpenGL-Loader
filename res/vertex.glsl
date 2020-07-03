@@ -7,6 +7,7 @@ layout(location = 2) in vec3 norm;
 out vec4 vColor;
 out vec2 oTexCoord;
 out vec3 oNormal;
+out vec3 oFragPos;
 
 uniform mat4 uModel;
 uniform mat4 uProjection;
@@ -18,6 +19,7 @@ void main()
     vColor      = vec4(clamp(pos, 0.0f, 1.0f), 1.0);
 
     oTexCoord = tex;
+    oNormal   = mat3(transpose(inverse(uModel))) * norm;
 
-    oNormal = mat3(transpose(inverse(uModel))) * norm;
+    oFragPos = (uModel * vec4(pos, 1.0)).xyz;
 }

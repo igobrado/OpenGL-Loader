@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "EventSystem/MoveEvents.hxx"
+#include "GLError.hxx"
 #include "common/Logging.hxx"
 
 Window::Window(
@@ -98,10 +99,10 @@ void Window::initialize()
         glfwTerminate();
     }
 
-    glEnable(GL_DEPTH_TEST);
+    GlCall(glEnable(GL_DEPTH_TEST));
 
     // Create Viewport
-    glViewport(0, 0, mWindowContext.bufferWidth, mWindowContext.bufferHeight);
+    GlCall(glViewport(0, 0, mWindowContext.bufferWidth, mWindowContext.bufferHeight));
     glfwSetWindowUserPointer(mWindowContext.mMainWindow, this);
 
     OGL_CORE_INFO("Window intiialized successfully, creating callbacks for keys and mouse move.\n");

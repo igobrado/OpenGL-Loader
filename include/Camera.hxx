@@ -23,6 +23,7 @@ public:
 
     void resetCameraContext();
 
+    glm::vec3 getCameraPosition();
     void      keyControl(const Keyboard& keyboard, float deltaTime);
     void      mouseControl(Mouse& mouse);
     glm::mat4 claculateViewMatrix();

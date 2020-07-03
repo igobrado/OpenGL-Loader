@@ -4,7 +4,9 @@
 #include <GL/glew.h>
 
 #include <fstream>
+#include <glm/glm.hpp>
 #include <string>
+#include <unordered_map>
 
 class Shader
 {
@@ -16,19 +18,15 @@ class Shader
     };
 
 public:
-    Shader();
+    Shader(const char* vertexShader, const char* fragmentShader);
     ~Shader();
 
     void createShaderFromString(const char* vertexShader, const char* fragmentShader);
     void createShaderFromFile(const char* vertexShader, const char* fragmentShader);
 
-    std::uint32_t getProjectionMatrixLocation() const;
-    std::uint32_t getModelMatrixLocation() const;
-    std::uint32_t getViewLocation() const;
-    std::uint32_t getUniformAmbientIntensityLocation() const;
-    std::uint32_t getUniformColorLocation() const;
-    std::uint32_t getUniformDiffuseIntensityLocation() const;
-    std::uint32_t getUniformDirectionLocation() const;
+    void updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4 value);
+    void updateGlUniform3f(const char* uniformName, glm::vec3 values);
+    void updateUniform1f(const char* uniformName, float& value);
 
     void useShader();
     void clearShader();
@@ -38,15 +36,12 @@ protected:
     void        addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType);
     std::string readFile(const char* fileLocation);
 
+    std::uint32_t getUniformLocation(const char* uniformName) const;
+
 private:
     std::uint32_t mShaderID;
-    std::uint32_t mUniformProjection;
-    std::uint32_t mUniformModel;
-    std::uint32_t mUniformView;
-    std::uint32_t mUniformAmbientIntensity;
-    std::uint32_t mUniformColor;
-    std::uint32_t mUniformDiffuseIntensity;
-    std::uint32_t mUniformDirection;
+
+    mutable std::unordered_map<std::string, std::uint32_t> mUniformCache;
 };
 
 #endif  // OPENGL_PBR_SHADER_HXX

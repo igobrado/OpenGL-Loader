@@ -1,6 +1,13 @@
 #include "property/Light.hxx"
 
-Light::Light(glm::vec3& color, float& aIntensity, Shader* shader, glm::vec3 direction, float diffuseIntensity)  //
+#include "UniformNames.hxx"
+
+Light::Light(
+        glm::vec3&               color,
+        float&                   aIntensity,
+        std::shared_ptr<Shader>& shader,
+        glm::vec3&               direction,
+        float&                   diffuseIntensity)  //
     : mColor{ color }
     , mAmbientIntensity{ aIntensity }
     , mShader{ shader }
@@ -9,18 +16,13 @@ Light::Light(glm::vec3& color, float& aIntensity, Shader* shader, glm::vec3 dire
 {
 }
 
-void Light::useLight()
+void Light::use()
 {
     if (mShader)
     {
-        glUniform3f(mShader->getUniformColorLocation(), mColor.x, mColor.y, mColor.z);
-        glUniform1f(mShader->getUniformAmbientIntensityLocation(), mAmbientIntensity);
-        glUniform3f(mShader->getUniformDirectionLocation(), mDirection.x, mDirection.y, mDirection.z);
-        glUniform1f(mShader->getUniformDiffuseIntensityLocation(), mDiffuseIntensity);
+        mShader->updateGlUniform3f(uColor, mColor);
+        mShader->updateGlUniform3f(uDirection, mDirection);
+        mShader->updateUniform1f(uAmbientIntensity, mAmbientIntensity);
+        mShader->updateUniform1f(uDiffuseIntensity, mDiffuseIntensity);
     }
-}
-
-void Light::setShader(Shader* shader)
-{
-    mShader = shader;
 }

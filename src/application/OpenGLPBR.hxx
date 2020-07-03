@@ -13,6 +13,7 @@
 #include "Texture.hxx"
 #include "Window.hxx"
 #include "property/Light.hxx"
+#include "property/Material.hxx"
 
 class OpenGLPBR : public IApplication
 {
@@ -24,7 +25,6 @@ public:
 protected:
     void update(glm::mat4& projectionMatrix) override;
 
-    void            createShaders();
     void            createObjects();
     constexpr float toRadians(float angle);
 
@@ -45,9 +45,7 @@ private:
     gui::ImGuiAbstraction   mImGui;
 
     std::vector<std::unique_ptr<Mesh>>   mMeshList;
-    std::vector<std::unique_ptr<Shader>> mShaderList;
-    const char*                          mVertexShader;
-    const char*                          mFragmentShader;
+    std::vector<std::shared_ptr<Shader>> mShaderList;
 
     float mDeltaTime;
     float mLastTime;
