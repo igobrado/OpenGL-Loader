@@ -152,7 +152,7 @@ public:
         ImGui::ColorEdit4("Color of screen", mColorOfScreen.data());
         ImGui::SliderFloat("Rotation angle", &mRotationAngle, 0.0f, 360.0f);
         ImGui::SliderFloat("Ambient intensity", &mAmbientIntensityControl, 0.0f, 1.0f);
-        ImGui::SliderFloat("Diffuse intensity", &mDiffuseIntensity, 0.0f, 10.0f);
+        ImGui::SliderFloat("Diffuse intensity", &mDiffuseIntensity, -10.0f, 10.0f);
 
         ImGui::Checkbox("Rotate around X axis", &mRotateAroundAxises[0]);
         ImGui::Checkbox("Rotate around Y axis", &mRotateAroundAxises[1]);
