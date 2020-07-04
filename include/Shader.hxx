@@ -4,9 +4,23 @@
 #include <GL/glew.h>
 
 #include <fstream>
+#include <vector>
+
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
+
+class PointLight;
+struct PointLightContext
+{
+    std::uint32_t uniformColor;
+    std::uint32_t uniformAmbientIntensity;
+    std::uint32_t uniformDiffuseIntensity;
+    std::uint32_t uniformPosition;
+    std::uint32_t uniformConstant;
+    std::uint32_t uniformLinear;
+    std::uint32_t uniformExponent;
+};
 
 class Shader
 {
@@ -26,8 +40,15 @@ public:
 
     void updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4 value);
     void updateGlUniform3f(const char* uniformName, glm::vec3 values);
-    void updateUniform1f(const char* uniformName, float& value);
+    void updateGlUniform1f(const char* uniformName, float& value);
+    void updateGlUniform1i(const char* uniformName, std::uint32_t& value);
 
+    void updateGlUniform3f(std::uint32_t location, glm::vec3& value);
+    void updateGlUniform1f(std::uint32_t location, float& value);
+    void updateGlUniformMat4(std::uint32_t location, std::uint32_t count, bool transpose, glm::mat4& value);
+    void updateGlUniform1i(std::uint32_t location,  std::uint32_t& value);
+
+    PointLightContext& getPointLightContext(int index);
     void useShader();
     void clearShader();
 
@@ -40,7 +61,7 @@ protected:
 
 private:
     std::uint32_t mShaderID;
-
+    std::vector<PointLightContext> mPointLightsContexts;
     mutable std::unordered_map<std::string, std::uint32_t> mUniformCache;
 };
 

@@ -1,11 +1,10 @@
 #include "property/Light.hxx"
 
-
 Light::Light(
-        glm::vec3&               color,
-        float&                   aIntensity,
+        glm::vec3                color,
+        float                    aIntensity,
         std::shared_ptr<Shader>& shader,
-        float&                   diffuseIntensity)  //
+        float                    diffuseIntensity)  //
     : mColor{ color }
     , mAmbientIntensity{ aIntensity }
     , mShader{ shader }

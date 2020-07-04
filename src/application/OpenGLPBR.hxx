@@ -14,6 +14,7 @@
 #include "Window.hxx"
 #include "property/DirectionalLight.hxx"
 #include "property/Material.hxx"
+#include "property/PointLight.hxx"
 
 class OpenGLPBR : public IApplication
 {
@@ -47,8 +48,8 @@ private:
     std::vector<std::unique_ptr<Mesh>>   mMeshList;
     std::vector<std::shared_ptr<Shader>> mShaderList;
 
-    float mDeltaTime;
-    float mLastTime;
+    float            mDeltaTime;
+    float            mLastTime;
     DirectionalLight mLight;
     struct DefaultCameraContext
     {
@@ -69,6 +70,8 @@ private:
         DefaultCameraContext();
     };
     bool mFirstDraw;
+
+    std::vector<std::unique_ptr<Light>> mLights;
 };
 
 #endif  // OPENGL_PBR_OPENGLPBR_HXX

@@ -1,23 +1,38 @@
 #include "property/PointLight.hxx"
 
+#include "UniformNames.hxx"
+
 PointLight::PointLight(
-        glm::vec3&               color,
-        float&                   aIntensity,
+        glm::vec3               color,
+        float                   aIntensity,
         std::shared_ptr<Shader>& shader,
-        float&                   diffuseIntensity,
+        float                   diffuseIntensity,
         glm::vec3                position,
         float                    constant,
         float                    linear,
-        float                    exponent)
+        float                    exponent,
+        int                      pointLightIndex)
     : Light{ color, aIntensity, shader, diffuseIntensity }
     , mPosition{ position }
     , mConstant{ constant }
     , mLinear{ linear }
     , mExponent{ exponent }
+    , mPointLightIndex{ pointLightIndex }
 {
 }
 
-void PointLight::usePointLight()
+void PointLight::use()
 {
+    if(mShader)
+    {
+        auto& lightContext = mShader->getPointLightContext(mPointLightIndex);
 
+        mShader->updateGlUniform3f(lightContext.uniformPosition, mPosition);
+        mShader->updateGlUniform3f(lightContext.uniformColor, mColor);
+        mShader->updateGlUniform1f(lightContext.uniformAmbientIntensity, mAmbientIntensity);
+        mShader->updateGlUniform1f(lightContext.uniformDiffuseIntensity, mDiffuseIntensity);
+        mShader->updateGlUniform1f(lightContext.uniformConstant, mConstant);
+        mShader->updateGlUniform1f(lightContext.uniformLinear, mLinear);
+        mShader->updateGlUniform1f(lightContext.uniformExponent, mExponent);
+    }
 }

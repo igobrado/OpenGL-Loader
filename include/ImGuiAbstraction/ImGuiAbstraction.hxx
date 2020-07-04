@@ -1,5 +1,6 @@
 #ifndef OPENGL_PBR_IMGUIABSTRACTION_HXX
 #define OPENGL_PBR_IMGUIABSTRACTION_HXX
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <examples/imgui_impl_glfw.h>
@@ -8,6 +9,7 @@
 
 #include <array>
 #include <glm/glm.hpp>
+#include "property/PointLight.hxx"
 
 namespace gui
 {
@@ -20,15 +22,9 @@ public:
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
         , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-        , mAmbientLightControl{ 1.0f, 1.0f, 1.0f }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
-        , mDirectionOfLight{ 2.0f, -1.0f, -2.0f }
         , mResetCamera{ false }
-        , mAmbientLightColor{ 1.0f, 1.0f, 1.0f }
-        , mAmbientIntensityControl{ 1.0f }
-        , mDiffuseIntensity{ 1.0f }
-        , mDirectionOfLightVec3{ 0.0f, 0.0f, 0.0f }
     {
         for (auto& factor : mScalingFactors)
         {
@@ -48,15 +44,9 @@ public:
         , mColorOfScreen{ 0.0f, 0.0f, 0.0f }
         , mScalingFactors{ numberOfMeshes }
         , mRotateAroundAxises{ true, false, false }
-        , mAmbientLightControl{ 1.0f, 1.0f, 1.0f }
         , mTranslateFactors{ numberOfMeshes }
         , mRotationAngle{ 1.0f }
-        , mDirectionOfLight{ 2.0f, -1.0f, -2.0f }
         , mResetCamera{ false }
-        , mAmbientLightColor{ 1.0f, 1.0f, 1.0f }
-        , mAmbientIntensityControl{ 1.0f }
-        , mDiffuseIntensity{ 1.0f }
-        , mDirectionOfLightVec3{ 0.0f, 0.0f, 0.0f }
     {
         for (auto& factor : mScalingFactors)
         {
@@ -87,26 +77,6 @@ public:
     const float getRotationAngleControl() const
     {
         return mRotationAngle;
-    }
-
-    float& diffuseIntensity()
-    {
-        return mDiffuseIntensity;
-    }
-
-    float& ambientIntensityControl()
-    {
-        return mAmbientIntensityControl;
-    }
-
-    glm::vec3& ambientLightColor()
-    {
-        return mAmbientLightColor;
-    }
-
-    glm::vec3& lightDirection()
-    {
-        return mDirectionOfLightVec3;
     }
 
     glm::vec3 getTranslateFactorVec3(std::uint8_t objectNumber) const
@@ -151,8 +121,6 @@ public:
         StartEndImGuiFrame startEndImGuiFrame{};
         ImGui::ColorEdit4("Color of screen", mColorOfScreen.data());
         ImGui::SliderFloat("Rotation angle", &mRotationAngle, 0.0f, 360.0f);
-        ImGui::SliderFloat("Ambient intensity", &mAmbientIntensityControl, 0.0f, 1.0f);
-        ImGui::SliderFloat("Diffuse intensity", &mDiffuseIntensity, -10.0f, 10.0f);
 
         ImGui::Checkbox("Rotate around X axis", &mRotateAroundAxises[0]);
         ImGui::Checkbox("Rotate around Y axis", &mRotateAroundAxises[1]);
@@ -163,16 +131,7 @@ public:
         ImGui::SliderFloat3("Translate object two", &mTranslateFactors[1][0], -10.0f, 10.0f);
         ImGui::SliderFloat3("Scaling XYZ object one", &mScalingFactors[0][0], 0.0f, 1.0f);
         ImGui::SliderFloat3("Scaling XYZ object two", &mScalingFactors[1][0], 0.0f, 1.0f);
-        ImGui::SliderFloat3("Ambient light color", &mAmbientLightControl[0], 0.0f, 1.0f);
-        ImGui::SliderFloat3("Light direction", &mDirectionOfLight[0], 0.0f, 10.0f);
 
-        mAmbientLightColor.x = mAmbientLightControl[0];
-        mAmbientLightColor.y = mAmbientLightControl[1];
-        mAmbientLightColor.z = mAmbientLightControl[2];
-
-        mDirectionOfLightVec3.x = mDirectionOfLight[0];
-        mDirectionOfLightVec3.x = mDirectionOfLight[1];
-        mDirectionOfLightVec3.x = mDirectionOfLight[2];
     }
 
 protected:
@@ -205,17 +164,11 @@ private:
     std::vector<std::array<float, 3>> mTranslateFactors;
     std::vector<std::array<float, 3>> mScalingFactors;
     std::array<float, 4>              mColorOfScreen;
-    std::array<float, 4>              mAmbientLightControl;
     std::array<bool, 3>               mRotateAroundAxises;
-    std::array<float, 3>              mDirectionOfLight;
     bool                              mResetCamera;
 
     float       mRotationAngle;
-    float       mAmbientIntensityControl;
-    float       mDiffuseIntensity;
     GLFWwindow* mWindowRef;
-    glm::vec3   mAmbientLightColor;
-    glm::vec3   mDirectionOfLightVec3;
 };
 
 }  // namespace gui

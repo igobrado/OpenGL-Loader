@@ -7,22 +7,24 @@ class PointLight : public Light
 {
 public:
     PointLight(
-            glm::vec3&               color,
-            float&                   aIntensity,
+            glm::vec3                color,
+            float                    aIntensity,
             std::shared_ptr<Shader>& shader,
-            float&                   diffuseIntensity,
+            float                    diffuseIntensity,
             glm::vec3                position,
             float                    constant,
             float                    linear,
-            float                    exponent);
-    void use(){};
+            float                    exponent,
+            int                      pointLightIndex);
+    void use() override;
 
-    virtual void usePointLight();
 private:
     glm::vec3 mPosition;
 
     float mConstant;
     float mLinear;
     float mExponent;
+
+    int mPointLightIndex;
 };
 #endif  // OPENGL_PBR_POINTLIGHT_HXX

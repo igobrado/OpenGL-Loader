@@ -1,6 +1,5 @@
 #include "OpenGLPBR.hxx"
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -36,11 +35,12 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
-    , mLight{ mImGui.ambientLightColor(),
-              mImGui.ambientIntensityControl(),
+    , mLight{ glm::vec3(1.0f,1.0f,1.0f),
+              0.3f,
               mShaderList[0],
-              mImGui.lightDirection(),
-              mImGui.diffuseIntensity() }
+              glm::vec3{0.0f, 0.0f, -1.0f},
+              0.3f }
+    , mLights{}
 {
     auto eventCallbackFN = [this](Event& e) {
         switch (e.category())
@@ -58,6 +58,28 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
         }
         mEventDispatcher->dispatch(e);
     };
+
+    mLights.push_back(std::make_unique<PointLight>(
+            glm::vec3{0.0f, 0.0f, 1.0f},
+            0.0f,
+            mShaderList[0],
+            1.0f,
+            glm::vec3{0.0f, 0.0f, 0.0f},
+            0.3f,
+            0.2f,
+            0.1f,
+            0));
+
+    mLights.push_back(std::make_unique<PointLight>(
+            glm::vec3{0.0f, 1.0f, 0.0f},
+            0.0f,
+            mShaderList[0],
+            1.0f,
+            glm::vec3{-4.0f, 2.0f, 0.0f},
+            0.3f,
+            0.2f,
+            0.1f,
+            1));
 
     mWindow->setEventCallbackFunction(std::move(eventCallbackFN));
     createObjects();
@@ -83,7 +105,6 @@ int OpenGLPBR::run()
         glfwPollEvents();
 
         mCamera.keyControl(mKeyboard, mDeltaTime);
-        // mCamera.mouseControl(mMouse);
         update(projectionMatrix);
         glfwSwapBuffers(*mWindow);
     }
@@ -107,7 +128,14 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
     }
 
     mShaderList[0]->updateGlUniformMat4(uView, 1, false, mCamera.claculateViewMatrix());
+    unsigned int t = mLights.size();
+    mShaderList[0]->updateGlUniform1i(uPointLightCount, t);
 
+    for (int k = 0; k < t; ++k)
+    {
+        mLights[k]->use();
+    }
+    mLight.use();
     for (auto& mesh : mMeshList)
     {
 
@@ -115,7 +143,6 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
         model = glm::translate(model, mImGui.getTranslateFactorVec3(i));
         if (mFirstDraw)
         {
-
             mFirstDraw = false;
         }
         model = glm::rotate(
@@ -123,9 +150,7 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
                 toRadians(mImGui.getRotationAngleControl()),
                 mImGui.getRotationRotationFactorVec3());
         model = glm::rotate(model, toRadians(180), glm::vec3(0.0f, 0.0f, 1.0f));
-        // model = glm::scale(model, mImGui.getScalingFactorByAxisVec3(i));
 
-        mLight.use();
         mShaderList[0]->updateGlUniformMat4(uModel, 1, false, model);
         mShaderList[0]->updateGlUniformMat4(uProjection, 1, false, projectionMatrix);
         mesh->renderMesh();
