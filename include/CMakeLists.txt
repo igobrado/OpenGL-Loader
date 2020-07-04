@@ -5,6 +5,7 @@ list(APPEND OPENGL_PBR_HEADERS
         "${CMAKE_CURRENT_LIST_DIR}/EventSystem/Event.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/DirectionalLight.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Light.hxx"
+        "${CMAKE_CURRENT_LIST_DIR}/property/PointLight.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Material.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/common/Logging.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Camera.hxx"

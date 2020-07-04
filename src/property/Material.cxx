@@ -13,5 +13,5 @@ Material::Material(float startIntensity, float startShinines, std::shared_ptr<Sh
 void Material::use()
 {
     mShader->updateUniform1f(uSpecularIntensity, mShinines);
-    mShader->updateUniform1f(uShinines, mShinines);
+    mShader->updateUniform1f(uShininess, mShinines);
 }
