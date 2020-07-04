@@ -15,6 +15,7 @@ public:
           float                   aIntensity,
           std::shared_ptr<Shader>& shader,
           float                   diffuseIntensity);
+    virtual ~Light() {};
     virtual void use() = 0;
 
 

@@ -36,10 +36,10 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
     , mLight{ glm::vec3(1.0f,1.0f,1.0f),
-              0.3f,
+              0.5f,
               mShaderList[0],
               glm::vec3{0.0f, 0.0f, -1.0f},
-              0.3f }
+              0.5f }
     , mLights{}
 {
     auto eventCallbackFN = [this](Event& e) {
@@ -59,25 +59,25 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
         mEventDispatcher->dispatch(e);
     };
 
+
     mLights.push_back(std::make_unique<PointLight>(
             glm::vec3{0.0f, 0.0f, 1.0f},
             0.0f,
             mShaderList[0],
-            1.0f,
+            0.0f,
             glm::vec3{0.0f, 0.0f, 0.0f},
             0.3f,
             0.2f,
             0.1f,
             0));
-
     mLights.push_back(std::make_unique<PointLight>(
             glm::vec3{0.0f, 1.0f, 0.0f},
             0.0f,
             mShaderList[0],
-            1.0f,
+            0.0f,
             glm::vec3{-4.0f, 2.0f, 0.0f},
             0.3f,
-            0.2f,
+            0.1f,
             0.1f,
             1));
 
@@ -178,25 +178,36 @@ void OpenGLPBR::createObjects()
              0.0f,  1.0f,  0.0f,    0.5f, 1.0f,   0.0f, 0.0f, 0.0f,
     };
     // clang-format on
+
+    // clang-format off
+    std::vector<unsigned int> florIndices = {
+            0, 2, 1,
+            1, 2, 3
+    };
+
+    std::vector<float> florVertices = {
+            //x     y     z        U     V       nx    ny    nz
+            -10.0f,  0.0f, -10.0f,  0.0f ,  0.0f,  0.0f, -1.0f, 0.0f,
+             10.0f,  0.0f, -10.0f,  10.0f,  0.0f,  0.0f, -1.0f, 0.0f,
+            -10.0f,  0.0f,  10.0f,  0.0f ,  10.0f, 0.0f, -1.0f, 0.0f,
+             10.0f,  0.0f,  10.0f,  10.0f,  10.0f, 0.0f, -1.0f, 0.0f
+    };
+    // clang-format on
+
     Texture brickTexture{ "../res/textures/brick.png" };
-    Texture dirtTexture{ "../res/textures/dirt.png" };
+    Texture dirtTexture{ "../res/textures/plain.png" };
 
     auto mesh    = std::make_unique<Mesh>();
-    auto meshTwo = std::make_unique<Mesh>();
+    auto meshTree = std::make_unique<Mesh>();
     calculateAvgNormals(indices, vertices, 8, 5);
 
     mesh->setTexture(brickTexture);
     mesh->setMaterial(Material{ 1.0f, 32.0f, mShaderList[0] });
-    meshTwo->setTexture(dirtTexture);
-    meshTwo->setMaterial(Material{ 0.3f, 4.0f, mShaderList[0] });
-
+    mesh->createMesh(vertices, indices);
+    meshTree->setTexture(dirtTexture);
+    meshTree->createMesh(florVertices, florIndices);
     mMeshList.push_back(std::move(mesh));
-    mMeshList.push_back(std::move(meshTwo));
-
-    for (auto& mesh : mMeshList)
-    {
-        mesh->createMesh(vertices, indices);
-    }
+    mMeshList.push_back(std::move(meshTree));
 }
 
 void OpenGLPBR::calculateAvgNormals(

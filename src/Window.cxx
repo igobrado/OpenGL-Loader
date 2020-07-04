@@ -86,7 +86,7 @@ void Window::initialize()
     // Set the current context
     glfwMakeContextCurrent(mWindowContext.mMainWindow);
 
-    glfwSetInputMode(mWindowContext.mMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(mWindowContext.mMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Allow modern extension access
     glewExperimental = GL_TRUE;
