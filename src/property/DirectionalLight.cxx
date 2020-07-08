@@ -6,8 +6,8 @@ DirectionalLight::DirectionalLight(
         float                    aIntensity,
         std::shared_ptr<Shader>& shader,
         glm::vec3                direction,
-        float                    diffuseIntensity)
-    : Light{ color, aIntensity, shader, diffuseIntensity }
+        float                    dIntensity)
+    : Light{ color, aIntensity, shader, dIntensity }
     , mDirection{ direction }
 {
 }

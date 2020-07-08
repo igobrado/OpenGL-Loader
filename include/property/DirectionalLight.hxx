@@ -11,7 +11,7 @@ public:
             float                    aIntensity,
             std::shared_ptr<Shader>& shader,
             glm::vec3                direction,
-            float                    diffuseIntensity);
+            float                    dIntensity);
 
     void use() override;
 

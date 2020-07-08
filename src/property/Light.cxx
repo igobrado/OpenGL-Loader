@@ -4,10 +4,10 @@ Light::Light(
         glm::vec3                color,
         float                    aIntensity,
         std::shared_ptr<Shader>& shader,
-        float                    diffuseIntensity)  //
+        float                    dIntensity)  //
     : mColor{ color }
     , mAmbientIntensity{ aIntensity }
     , mShader{ shader }
-    , mDiffuseIntensity{ diffuseIntensity }
+    , mDiffuseIntensity{ dIntensity }
 {
 }

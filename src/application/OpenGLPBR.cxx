@@ -35,11 +35,7 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
     , mDeltaTime{ 0.0f }
     , mLastTime{ 0.0f }
     , mFirstDraw{ true }
-    , mLight{ glm::vec3(1.0f,1.0f,1.0f),
-              0.5f,
-              mShaderList[0],
-              glm::vec3{0.0f, 0.0f, -1.0f},
-              0.5f }
+    , mLight{ glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, mShaderList[0], glm::vec3{ 0.0f, 0.0f, -1.0f }, 0.0f }
     , mLights{}
 {
     auto eventCallbackFN = [this](Event& e) {
@@ -58,28 +54,37 @@ OpenGLPBR::OpenGLPBR(std::uint32_t windowWidth, std::uint32_t windowHeight)  //
         }
         mEventDispatcher->dispatch(e);
     };
-
-
     mLights.push_back(std::make_unique<PointLight>(
-            glm::vec3{0.0f, 0.0f, 1.0f},
+            glm::vec3{ 0.0f, 1.0f, 0.0f },
             0.0f,
             mShaderList[0],
-            0.0f,
-            glm::vec3{0.0f, 0.0f, 0.0f},
+            1.0f,
+            glm::vec3{ 2.0f, 1.0f, 0.0f },
             0.3f,
             0.2f,
             0.1f,
             0));
+
     mLights.push_back(std::make_unique<PointLight>(
-            glm::vec3{0.0f, 1.0f, 0.0f},
+            glm::vec3{ 1.0f, 0.0f, 0.0f },
             0.0f,
             mShaderList[0],
-            0.0f,
-            glm::vec3{-4.0f, 2.0f, 0.0f},
+            1.0f,
+            glm::vec3{ -1.0f, 1.0f, 0.0f },
             0.3f,
-            0.1f,
+            0.2f,
             0.1f,
             1));
+    mLights.push_back(std::make_unique<PointLight>(
+            glm::vec3{ 0.0f, 0.0f, 1.0f },
+            0.0f,
+            mShaderList[0],
+            1.0f,
+            glm::vec3{ -1.0f, 1.0f, -5.0f },
+            0.3f,
+            0.2f,
+            0.1f,
+            2));
 
     mWindow->setEventCallbackFunction(std::move(eventCallbackFN));
     createObjects();
@@ -135,7 +140,8 @@ void OpenGLPBR::update(glm::mat4& projectionMatrix)
     {
         mLights[k]->use();
     }
-    mLight.use();
+    // mLight.use();
+
     for (auto& mesh : mMeshList)
     {
 
@@ -197,15 +203,17 @@ void OpenGLPBR::createObjects()
     Texture brickTexture{ "../res/textures/brick.png" };
     Texture dirtTexture{ "../res/textures/plain.png" };
 
-    auto mesh    = std::make_unique<Mesh>();
+    auto mesh     = std::make_unique<Mesh>();
     auto meshTree = std::make_unique<Mesh>();
     calculateAvgNormals(indices, vertices, 8, 5);
 
     mesh->setTexture(brickTexture);
-    mesh->setMaterial(Material{ 1.0f, 32.0f, mShaderList[0] });
+    mesh->setMaterial(Material{ 0.3f, 4.0f, mShaderList[0] });
     mesh->createMesh(vertices, indices);
     meshTree->setTexture(dirtTexture);
     meshTree->createMesh(florVertices, florIndices);
+    meshTree->setMaterial(Material{ 4.0f, 256.0f, mShaderList[0] });
+
     mMeshList.push_back(std::move(mesh));
     mMeshList.push_back(std::move(meshTree));
 }

@@ -11,13 +11,13 @@ constexpr const char* uDirection         = "uDirectionalLight.direction";
 constexpr const char* uSpecularIntensity = "uMaterial.specularIntensity";
 constexpr const char* uShininess         = "uMaterial.shininess";
 constexpr const char* uEyePosition       = "uEyePosition";
-constexpr const char* uPointLightCount    = "uPointLightCount";
+constexpr const char* uPointLightCount   = "uPointLightCount";
 
-constexpr const char* uBaseCol = ".base.color";
+constexpr const char* uBaseCol        = ".base.color";
 constexpr const char* uBaseAIntensity = ".base.ambientIntensity";
 constexpr const char* uBaseDIntensity = ".base.diffuseIntensity";
 
-constexpr const char* uPointLights = "uPointLights";
+constexpr const char* uPointLights   = "uPointLights";
 constexpr const char* uPointLightPos = ".position";
 constexpr const char* uPointLightCon = ".constant";
 constexpr const char* uPointLightLin = ".linear";

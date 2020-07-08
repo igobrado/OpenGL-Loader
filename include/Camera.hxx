@@ -23,10 +23,10 @@ public:
 
     void resetCameraContext();
 
-    glm::vec3 getCameraPosition();
-    void      keyControl(const Keyboard& keyboard, float deltaTime);
-    void      mouseControl(Mouse& mouse);
-    glm::mat4 claculateViewMatrix();
+    glm::vec3& getCameraPosition();
+    void       keyControl(const Keyboard& keyboard, float deltaTime);
+    void       mouseControl(Mouse& mouse);
+    glm::mat4& claculateViewMatrix();
 
     std::function<void(float, float, bool)> getOnMouseMoveCallbackFN();
 
@@ -63,6 +63,8 @@ private:
     float mTurnSpeed;
 
     bool mCaptureMouseEvents;
+
+    glm::mat4 mViewMatrix;
 };
 
 #endif  // OPENGL_PBR_CAMERA_H

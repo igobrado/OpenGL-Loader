@@ -45,7 +45,7 @@ void Camera::update()
     mCameraContext.up    = glm::normalize(glm::cross(mCameraContext.right, mCameraContext.front));
 }
 
-glm::vec3 Camera::getCameraPosition()
+glm::vec3& Camera::getCameraPosition()
 {
     return mCameraContext.position;
 }
@@ -89,9 +89,13 @@ void Camera::mouseControl(Mouse& mouse)
     update();
 }
 
-glm::mat4 Camera::claculateViewMatrix()
+glm::mat4& Camera::claculateViewMatrix()
 {
-    return glm::lookAt(mCameraContext.position, mCameraContext.position + mCameraContext.front, mCameraContext.up);
+    mViewMatrix = glm::lookAt(
+            mCameraContext.position,
+            mCameraContext.position + mCameraContext.front,
+            mCameraContext.up);
+    return mViewMatrix;
 }
 
 std::function<void(float, float, bool)> Camera::getOnMouseMoveCallbackFN()

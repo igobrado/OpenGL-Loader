@@ -35,13 +35,13 @@ void Shader::createShaderFromFile(const char* vertexShader, const char* fragment
     OGL_CORE_INFO("Compiling shaders went successfully!");
 }
 
-void Shader::updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4 value)
+void Shader::updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4& value)
 {
     auto uniformLocation = getUniformLocation(uniformName);
     GlCall(glUniformMatrix4fv(uniformLocation, count, transpose, glm::value_ptr(value)));
 }
 
-void Shader::updateGlUniform3f(const char* uniformName, glm::vec3 values)
+void Shader::updateGlUniform3f(const char* uniformName, glm::vec3& values)
 {
     auto uniformLocation = getUniformLocation(uniformName);
     GlCall(glUniform3f(uniformLocation, values.x, values.y, values.z));
@@ -139,7 +139,7 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
         return;
     }
     // Just to register the uniform
-    (void)getUniformLocation(uPointLightCount);
+    (void) getUniformLocation(uPointLightCount);
 
     for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
     {

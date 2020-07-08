@@ -11,20 +11,14 @@
 class Light
 {
 public:
-    Light(glm::vec3               color,
-          float                   aIntensity,
-          std::shared_ptr<Shader>& shader,
-          float                   diffuseIntensity);
-    virtual ~Light() {};
+    Light(glm::vec3 color, float aIntensity, std::shared_ptr<Shader>& shader, float dIntensity);
+    virtual ~Light(){};
     virtual void use() = 0;
 
-
 protected:
-    glm::vec3 mColor;
-    float     mAmbientIntensity;
-
+    glm::vec3               mColor;
+    float                   mAmbientIntensity;
     std::shared_ptr<Shader> mShader;
-
-    float     mDiffuseIntensity;
+    float                   mDiffuseIntensity;
 };
 #endif  // !OPENGL_PBR_MESH_HXX

@@ -4,11 +4,10 @@
 #include <GL/glew.h>
 
 #include <fstream>
-#include <vector>
-
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class PointLight;
 struct PointLightContext
@@ -38,19 +37,19 @@ public:
     void createShaderFromString(const char* vertexShader, const char* fragmentShader);
     void createShaderFromFile(const char* vertexShader, const char* fragmentShader);
 
-    void updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4 value);
-    void updateGlUniform3f(const char* uniformName, glm::vec3 values);
+    void updateGlUniformMat4(const char* uniformName, std::uint32_t count, bool transpose, glm::mat4& value);
+    void updateGlUniform3f(const char* uniformName, glm::vec3& values);
     void updateGlUniform1f(const char* uniformName, float& value);
     void updateGlUniform1i(const char* uniformName, std::uint32_t& value);
 
     void updateGlUniform3f(std::uint32_t location, glm::vec3& value);
     void updateGlUniform1f(std::uint32_t location, float& value);
     void updateGlUniformMat4(std::uint32_t location, std::uint32_t count, bool transpose, glm::mat4& value);
-    void updateGlUniform1i(std::uint32_t location,  std::uint32_t& value);
+    void updateGlUniform1i(std::uint32_t location, std::uint32_t& value);
 
     PointLightContext& getPointLightContext(int index);
-    void useShader();
-    void clearShader();
+    void               useShader();
+    void               clearShader();
 
 protected:
     void        compileShader(const char* vertexShader, const char* fragmentShader);
@@ -60,8 +59,8 @@ protected:
     std::uint32_t getUniformLocation(const char* uniformName) const;
 
 private:
-    std::uint32_t mShaderID;
-    std::vector<PointLightContext> mPointLightsContexts;
+    std::uint32_t                                          mShaderID;
+    std::vector<PointLightContext>                         mPointLightsContexts;
     mutable std::unordered_map<std::string, std::uint32_t> mUniformCache;
 };
 

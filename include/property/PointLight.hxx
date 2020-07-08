@@ -10,7 +10,7 @@ public:
             glm::vec3                color,
             float                    aIntensity,
             std::shared_ptr<Shader>& shader,
-            float                    diffuseIntensity,
+            float                    dIntensity,
             glm::vec3                position,
             float                    constant,
             float                    linear,
