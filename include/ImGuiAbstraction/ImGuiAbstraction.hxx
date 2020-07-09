@@ -128,9 +128,7 @@ public:
         ImGui::Checkbox("ResetCameraContext", &mResetCamera);
 
         ImGui::SliderFloat3("Translate object one", &mTranslateFactors[0][0], -10.0f, 10.0f);
-        ImGui::SliderFloat3("Translate object two", &mTranslateFactors[1][0], -10.0f, 10.0f);
         ImGui::SliderFloat3("Scaling XYZ object one", &mScalingFactors[0][0], 0.0f, 1.0f);
-        ImGui::SliderFloat3("Scaling XYZ object two", &mScalingFactors[1][0], 0.0f, 1.0f);
 
     }
 

@@ -7,7 +7,8 @@
 #include "GLError.hxx"
 #include "UniformNames.hxx"
 #include "common/Logging.hxx"
-#include "property/PointLight.hxx"
+
+#include "property/SpotLight.hxx"
 
 Shader::Shader(const char* vertexShader, const char* fragmentShader)  //
     : mShaderID{ 0 }
@@ -140,6 +141,7 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
     }
     // Just to register the uniform
     (void) getUniformLocation(uPointLightCount);
+    (void) getUniformLocation(uSpotLightCount);
 
     for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
     {
@@ -169,6 +171,41 @@ void Shader::compileShader(const char* vertexShader, const char* fragmentShader)
 
         mPointLightsContexts.push_back(pointContext);
     }
+
+    for (int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+    {
+        SpotLightContext spotContext;
+        char             locBuff[100] = { '\0' };
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uBaseCol);
+        spotContext.uniformColor = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uBaseAIntensity);
+        spotContext.uniformAmbientIntensity = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uBaseDIntensity);
+        spotContext.uniformDiffuseIntensity = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uPointLightPos);
+        spotContext.uniformPosition = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uPointLightCon);
+        spotContext.uniformConstant = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uPointLightLin);
+        spotContext.uniformLinear = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s%s", uSpotLights, i, uBase, uPointLightExp);
+        spotContext.uniformExponent = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s", uSpotLights, i, uSpotLightDirection);
+        spotContext.uniformDirection = getUniformLocation(locBuff);
+
+        std::snprintf(locBuff, sizeof(locBuff), "%s[%d]%s", uSpotLights, i, uEdge);
+        spotContext.uniformEdge = getUniformLocation(locBuff);
+
+        mSpotLightContexts.push_back(spotContext);
+    }
 }
 
 void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType)
@@ -188,11 +225,10 @@ void Shader::addShader(std::uint32_t theProgram, const char* shaderCode, ShaderT
     glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
     if (!result)
     {
-        glGetShaderInfoLog(mShaderID, sizeof(eLog), nullptr, eLog);
-        OGL_CORE_ERROR(
-                "Error compiling %s shader: %s\n",
-                shaderType == ShaderType::VERTEX ? "vertex" : "fragment",
-                eLog);
+        glGetShaderInfoLog(theShader, sizeof(eLog), nullptr, eLog);
+        std::stringstream ss;
+        ss << "Error compiling shader: " << eLog;
+        OGL_CORE_ERROR(ss.str().c_str());
         return;
     }
     glAttachShader(theProgram, theShader);
@@ -230,4 +266,9 @@ std::uint32_t Shader::getUniformLocation(const char* uniformName) const
 
     mUniformCache[uniformName] = location;
     return location;
+}
+
+SpotLightContext& Shader::getSpotLightContext(int index)
+{
+    return mSpotLightContexts[index];
 }

@@ -20,7 +20,6 @@ public:
 
     void createMesh(std::vector<float>& vertices, std::vector<std::uint32_t>& indices);
     void renderMesh();
-    void clearMesh();
 
     void setTexture(Texture texture);
     void setMaterial(Material material);

@@ -15,16 +15,16 @@ public:
             float                    constant,
             float                    linear,
             float                    exponent,
-            int                      pointLightIndex);
+            int                      lightIndex);
     void use() override;
 
-private:
+protected:
     glm::vec3 mPosition;
 
     float mConstant;
     float mLinear;
     float mExponent;
 
-    int mPointLightIndex;
+    int mLightIndex;
 };
 #endif  // OPENGL_PBR_POINTLIGHT_HXX

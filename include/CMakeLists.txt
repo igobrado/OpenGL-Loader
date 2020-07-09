@@ -6,8 +6,10 @@ list(APPEND OPENGL_PBR_HEADERS
         "${CMAKE_CURRENT_LIST_DIR}/property/DirectionalLight.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Light.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/PointLight.hxx"
+        "${CMAKE_CURRENT_LIST_DIR}/property/SpotLight.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Material.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/common/Logging.hxx"
+        "${CMAKE_CURRENT_LIST_DIR}/common/Model.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Camera.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/GLError.hxx"
         "${CMAKE_CURRENT_LIST_DIR}/Keyboard.hxx"
@@ -20,4 +22,5 @@ list(APPEND OPENGL_PBR_HEADERS
 
 list(APPEND OPENGL_PBR_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/common/Logging.cxx"
+        "${CMAKE_CURRENT_LIST_DIR}/common/Model.cxx"
         )

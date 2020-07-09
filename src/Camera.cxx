@@ -71,24 +71,6 @@ void Camera::keyControl(const Keyboard& keyboard, float deltaTime)
     }
 }
 
-void Camera::mouseControl(Mouse& mouse)
-{
-    // TODO: CAPTURE ONLY IF MOUSE IS AVAILABLE
-    float xChange = mouse.getXChange();
-    float yChange = mouse.getYChange();
-
-    xChange *= mTurnSpeed;
-    yChange *= mTurnSpeed;
-
-    mCameraContext.yaw += xChange;
-    mCameraContext.pitch += yChange;
-
-    mCameraContext.pitch = mCameraContext.pitch > 89.9f ? 89.0f : mCameraContext.pitch;
-    mCameraContext.pitch = mCameraContext.pitch < -89.9f ? -89.0f : mCameraContext.pitch;
-
-    update();
-}
-
 glm::mat4& Camera::claculateViewMatrix()
 {
     mViewMatrix = glm::lookAt(
@@ -115,4 +97,9 @@ std::function<void(float, float, bool)> Camera::getOnMouseMoveCallbackFN()
             update();
         }
     };
+}
+
+glm::vec3 Camera::getCameraDirection()
+{
+    return glm::normalize(mCameraContext.front);
 }

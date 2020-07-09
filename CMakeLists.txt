@@ -61,8 +61,18 @@ else()
     set(IMGUI_EXAMPLES_DIR "${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/examples")
 endif()
 
-list (APPEND OPENGL_PBR_HEADERS
-        "${CMAKE_CURRENT_LIST_DIR}/vendor/stb_image.h")
+# Assure assimp package was manually entered
+if(EXISTS "${assimp_INCLUDE_DIRS}" AND EXISTS "${assimp_LIBRARIES}")
+    set(assimp_FOUND ON)
+else()
+    # Try to find assimp package
+    find_package("assimp")
+    if(NOT assimp_FOUND)
+        message(FATAL_ERROR "assimp was not found.")
+    endif()
+endif()
+
+list (APPEND OPENGL_PBR_HEADERS "${CMAKE_CURRENT_LIST_DIR}/vendor/stb_image.h")
 
 include("${CMAKE_CURRENT_LIST_DIR}/include/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt")
@@ -83,6 +93,7 @@ target_include_directories(
         "${GLM_INCLUDE_DIRS}"
         "${IMGUI_SRC_DIR}"
         "${IMGUI_EXAMPLES_DIR}"
+        "${assimp_INCLUDE_DIRS}"
 )
 
 target_link_libraries(
@@ -90,5 +101,6 @@ target_link_libraries(
         "${GLEW_LIBRARIES}"
         "${GLFW_LIBRARIES}"
         "${OPENGL_LIBRARIES}"
+        "${assimp_LIBRARIES}"
 )
 

@@ -11,6 +11,8 @@
 #include "Keyboard.hxx"
 #include "Mouse.hxx"
 
+#include "assimp/DefaultIOStream.h"
+
 class Camera
 {
 public:
@@ -25,9 +27,8 @@ public:
 
     glm::vec3& getCameraPosition();
     void       keyControl(const Keyboard& keyboard, float deltaTime);
-    void       mouseControl(Mouse& mouse);
     glm::mat4& claculateViewMatrix();
-
+    glm::vec3 getCameraDirection();
     std::function<void(float, float, bool)> getOnMouseMoveCallbackFN();
 
 protected:

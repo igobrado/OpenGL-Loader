@@ -13,15 +13,22 @@ enum class TextureType : int
     TEXTURE_3D = GL_TEXTURE_3D,
 };
 
+enum class TextureRgbType : int
+{
+    RGBA = GL_RGBA,
+    RGB = GL_RGB,
+};
+
 class Texture
 {
 public:
-    Texture(const char* fileLocation, TextureType textureType = TextureType::TEXTURE_2D);
+    Texture(const char* fileLocation, TextureType textureType = TextureType::TEXTURE_2D, TextureRgbType rgba = TextureRgbType::RGB);
     ~Texture();
 
     TextureType getTextureType();
 
-    void loadTexture();
+    bool loadTexture();
+    bool loadAlfaTexture();
     void useTexture();
     void clearTexture();
 
@@ -35,6 +42,7 @@ private:
         std::string   fileLocation;
 
         TextureType textureType;
+        TextureRgbType rgbaType;
     } mTextureContext;
 };
 

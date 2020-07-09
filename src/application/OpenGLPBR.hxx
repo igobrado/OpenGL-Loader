@@ -15,6 +15,8 @@
 #include "property/DirectionalLight.hxx"
 #include "property/Material.hxx"
 #include "property/PointLight.hxx"
+#include "property/SpotLight.hxx"
+#include "common/Model.hxx"
 
 class OpenGLPBR : public IApplication
 {
@@ -45,7 +47,7 @@ private:
     std::unique_ptr<Window> mWindow;
     gui::ImGuiAbstraction   mImGui;
 
-    std::vector<std::unique_ptr<Mesh>>   mMeshList;
+    std::unique_ptr<Mesh>   mFlor;
     std::vector<std::shared_ptr<Shader>> mShaderList;
 
     float            mDeltaTime;
@@ -72,6 +74,10 @@ private:
     bool mFirstDraw;
 
     std::vector<std::unique_ptr<Light>> mLights;
+
+    std::vector<SpotLight> mSpotLights;
+
+    Model mModel;
 };
 
 #endif  // OPENGL_PBR_OPENGLPBR_HXX

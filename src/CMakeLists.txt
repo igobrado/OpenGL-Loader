@@ -4,6 +4,7 @@ list(APPEND OPENGL_PBR_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/property/DirectionalLight.cxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Light.cxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/PointLight.cxx"
+        "${CMAKE_CURRENT_LIST_DIR}/property/SpotLight.cxx"
         "${CMAKE_CURRENT_LIST_DIR}/property/Material.cxx"
         "${CMAKE_CURRENT_LIST_DIR}/Camera.cxx"
         "${CMAKE_CURRENT_LIST_DIR}/Event.cxx"

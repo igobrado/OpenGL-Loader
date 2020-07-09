@@ -3,8 +3,8 @@
 #include "GLError.hxx"
 #include "common/Logging.hxx"
 
-Texture::Texture(const char* fileLoc, TextureType textureType)
-    : mTextureContext{ 0U, 0U, 0U, 0U, fileLoc, textureType }
+Texture::Texture(const char* fileLoc, TextureType textureType, TextureRgbType rgba)
+    : mTextureContext{ 0U, 0U, 0U, 0U, fileLoc, textureType, rgba }
 {
 }
 
@@ -18,15 +18,15 @@ TextureType Texture::getTextureType()
     return mTextureContext.textureType;
 }
 
-void Texture::loadTexture()
+bool Texture::loadTexture()
 {
+    bool rv = false;
     unsigned char* texData = stbi_load(
             mTextureContext.fileLocation.c_str(),
             &mTextureContext.width,
             &mTextureContext.height,
             &mTextureContext.bitDepth,
             0);
-
     if (!texData)
     {
         std::string log{ "Failed to load texture " + mTextureContext.fileLocation };
@@ -49,7 +49,7 @@ void Texture::loadTexture()
                 mTextureContext.width,
                 mTextureContext.height,
                 0,
-                GL_RGBA,
+                mTextureContext.rgbaType == TextureRgbType::RGBA ? GL_RGBA : GL_RGB,
                 GL_UNSIGNED_BYTE,
                 texData));
         GlCall(glGenerateMipmap((int) mTextureContext.textureType));
@@ -57,7 +57,9 @@ void Texture::loadTexture()
         GlCall(glBindTexture((int) mTextureContext.textureType, 0));
         stbi_image_free(texData);
         OGL_CORE_INFO("Successively loaded texture\n.");
+        rv = true;
     }
+    return rv;
 }
 
 void Texture::useTexture()

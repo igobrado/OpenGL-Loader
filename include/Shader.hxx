@@ -9,9 +9,18 @@
 #include <unordered_map>
 #include <vector>
 
-class PointLight;
 struct PointLightContext
 {
+    PointLightContext()
+        : uniformColor{ 0 }
+        , uniformAmbientIntensity{ 0 }
+        , uniformDiffuseIntensity{ 0U }
+        , uniformPosition{ 0U }
+        , uniformConstant{ 0U }
+        , uniformLinear{ 0U }
+        , uniformExponent{ 0U }
+    {
+    }
     std::uint32_t uniformColor;
     std::uint32_t uniformAmbientIntensity;
     std::uint32_t uniformDiffuseIntensity;
@@ -21,6 +30,19 @@ struct PointLightContext
     std::uint32_t uniformExponent;
 };
 
+struct SpotLightContext : public PointLightContext
+{
+    SpotLightContext()  //
+        : PointLightContext{}
+        , uniformDirection{ 0U }
+        , uniformEdge{ 0U }
+    {
+    }
+    std::uint32_t uniformDirection;
+    std::uint32_t uniformEdge;
+};
+
+class SpotLight;
 class Shader
 {
     enum class ShaderType : GLenum
@@ -48,9 +70,11 @@ public:
     void updateGlUniform1i(std::uint32_t location, std::uint32_t& value);
 
     PointLightContext& getPointLightContext(int index);
-    void               useShader();
-    void               clearShader();
+    SpotLightContext&  getSpotLightContext(int index);
 
+    void useShader();
+    void clearShader();
+    void useSpotLight(SpotLight* lights, unsigned int size);
 protected:
     void        compileShader(const char* vertexShader, const char* fragmentShader);
     void        addShader(std::uint32_t theProgram, const char* shaderCode, ShaderType shaderType);
@@ -59,8 +83,10 @@ protected:
     std::uint32_t getUniformLocation(const char* uniformName) const;
 
 private:
-    std::uint32_t                                          mShaderID;
-    std::vector<PointLightContext>                         mPointLightsContexts;
+    std::uint32_t                  mShaderID;
+    std::vector<PointLightContext> mPointLightsContexts;
+    std::vector<SpotLightContext>  mSpotLightContexts;
+
     mutable std::unordered_map<std::string, std::uint32_t> mUniformCache;
 };
 

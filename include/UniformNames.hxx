@@ -23,5 +23,12 @@ constexpr const char* uPointLightCon = ".constant";
 constexpr const char* uPointLightLin = ".linear";
 constexpr const char* uPointLightExp = ".exponent";
 
+constexpr const char* uBase = ".base";
+constexpr const char* uSpotLightCount = "uSpotLightCount";
+constexpr const char* uSpotLights   = "uSpotLights";
+constexpr const char* uSpotLightDirection   = ".direction";
+constexpr const char* uEdge   = ".edge";
+
 constexpr const int MAX_POINT_LIGHTS = 3;
+constexpr const int MAX_SPOT_LIGHTS  = 3;
 #endif  //! OPENGL_PBR_UNIFORM_NAMES_HXX
