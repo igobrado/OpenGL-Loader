@@ -3,6 +3,7 @@
 
 #include <array>
 #include <functional>
+#include <string>
 
 #include "Keyboard.hxx"
 #include "Mouse.hxx"
